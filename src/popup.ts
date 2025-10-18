@@ -95,7 +95,13 @@ class PopupManager {
     }
 
     chrome.permissions.getAll((result) => {
-      let siteAccess: string;
+      const permissionInfo = document.getElementById('permission-info');
+      const permissions = result.permissions;
+      if (permissionInfo && permissions) {
+        permissionInfo.textContent = permissions.join(', ');
+      }
+
+      let siteAccess: string = '';
       if (result.origins && result.origins.length > 0) {
         if (result.origins.includes("<all_urls>")) {
           siteAccess = "すべてのサイト";
