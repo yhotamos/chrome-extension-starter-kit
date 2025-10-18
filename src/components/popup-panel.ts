@@ -150,9 +150,9 @@ export class PopupPanel {
     });
   }
 
-  public messageOutput(datetime: string, message: string): void {
+  public messageOutput(message: string, datetime: string): void {
     if (this.messageDiv) {
-      this.messageDiv.innerHTML += `<p class="m-0">${datetime} ${message}</p>`;
+      this.messageDiv.innerHTML += `<p class="m-0">[${datetime}] ${message}</p>`;
     }
   }
 

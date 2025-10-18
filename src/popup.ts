@@ -23,7 +23,7 @@ class PopupManager {
         this.isEnabled = data.isEnabled || false;
         this.enabledElement.checked = this.isEnabled;
       }
-      this.showMessage(this.dateTime(), this.isEnabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
+      this.showMessage(this.isEnabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
     });
   }
 
@@ -32,7 +32,7 @@ class PopupManager {
       this.enabledElement.addEventListener('change', (event) => {
         this.isEnabled = (event.target as HTMLInputElement).checked;
         chrome.storage.local.set({ isEnabled: this.isEnabled }, () => {
-          this.showMessage(this.dateTime(), this.isEnabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
+          this.showMessage(this.isEnabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
         });
       });
     }
@@ -149,7 +149,7 @@ class PopupManager {
   }
 
   private showMessage(message: string, timestamp: string = this.dateTime()) {
-    this.panel.messageOutput(timestamp, message);
+    this.panel.messageOutput(message, timestamp);
   }
 
   private dateTime(): string {
