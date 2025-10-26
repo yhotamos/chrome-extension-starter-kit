@@ -26,7 +26,14 @@ class PopupManager {
         this.enabled = data.enabled || false;
         this.enabledElement.checked = this.enabled;
       }
-      this.showMessage(this.enabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
+      this.showMessage(`${this.manifestData.name} が起動しました`);
+
+      // 設定値の読み込み例
+      // const settings = data.settings || {};
+      // if (settings.theme) {
+      //   const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
+      //   if (themeSelect) themeSelect.value = settings.theme;
+      // }
     });
   }
 
@@ -40,7 +47,39 @@ class PopupManager {
       });
     }
 
+    this.setupSettingsListeners();
     this.initializeUI();
+  }
+
+  private setupSettingsListeners(): void {
+    // 設定項目のイベントリスナー例
+    //
+    // セレクトボックスの例:
+    // const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
+    // if (themeSelect) {
+    //   themeSelect.addEventListener('change', (event) => {
+    //     const value = (event.target as HTMLSelectElement).value;
+    //     this.saveSetting('theme', value, `テーマを「${value}」に変更しました`);
+    //   });
+    // }
+    //
+    // チェックボックスの例:
+    // const notificationToggle = document.getElementById('enable-notifications') as HTMLInputElement;
+    // if (notificationToggle) {
+    //   notificationToggle.addEventListener('change', (event) => {
+    //     const checked = (event.target as HTMLInputElement).checked;
+    //     this.saveSetting('notifications', checked, `通知を${checked ? '有効' : '無効'}にしました`);
+    //   });
+    // }
+    //
+    // スライダーの例:
+    // const fontSizeRange = document.getElementById('font-size') as HTMLInputElement;
+    // if (fontSizeRange) {
+    //   fontSizeRange.addEventListener('change', (event) => {
+    //     const value = (event.target as HTMLInputElement).value;
+    //     this.saveSetting('fontSize', value, `フォントサイズを${value}pxに変更しました`);
+    //   });
+    // }
   }
 
   private initializeUI(): void {
@@ -117,12 +156,21 @@ class PopupManager {
     });
   }
 
-  private saveSettings(datetime: string, message: string, value: any): void {
-    const settings = {
-      sampleValue: value,
-    };
-    chrome.storage.local.set({ settings: settings }, () => {
-      this.showMessage(message, datetime);
+  /**
+   * 設定値を保存するヘルパーメソッド
+   * @param key - 設定のキー名
+   * @param value - 保存する値
+   * @param message - 保存成功時に表示するメッセージ
+   */
+  private saveSetting(key: string, value: any, message?: string): void {
+    chrome.storage.local.get(['settings'], (data) => {
+      const settings = data.settings || {};
+      settings[key] = value;
+      chrome.storage.local.set({ settings }, () => {
+        if (message) {
+          this.showMessage(message);
+        }
+      });
     });
   }
 
