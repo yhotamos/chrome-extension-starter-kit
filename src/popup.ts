@@ -1,10 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { PopupPanel } from './components/popup-panel';
+import { dateTime } from './utils/date';
+import { clickURL } from './utils/dom';
+import { getSiteAccessText } from './utils/permissions';
 
 class PopupManager {
   private panel: PopupPanel;
-  private isEnabled: boolean = false;
+  private enabled: boolean = false;
   private enabledElement: HTMLInputElement | null;
   private manifestData: chrome.runtime.Manifest;
 
@@ -18,28 +21,26 @@ class PopupManager {
   }
 
   private loadInitialState(): void {
-    chrome.storage.local.get(['settings', 'isEnabled'], (data) => {
+    chrome.storage.local.get(['settings', 'enabled'], (data) => {
       if (this.enabledElement) {
-        this.isEnabled = data.isEnabled || false;
-        this.enabledElement.checked = this.isEnabled;
+        this.enabled = data.enabled || false;
+        this.enabledElement.checked = this.enabled;
       }
-      this.showMessage(this.isEnabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
+      this.showMessage(this.enabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
     });
   }
 
   private addEventListeners(): void {
     if (this.enabledElement) {
       this.enabledElement.addEventListener('change', (event) => {
-        this.isEnabled = (event.target as HTMLInputElement).checked;
-        chrome.storage.local.set({ isEnabled: this.isEnabled }, () => {
-          this.showMessage(this.isEnabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
+        this.enabled = (event.target as HTMLInputElement).checked;
+        chrome.storage.local.set({ enabled: this.enabled }, () => {
+          this.showMessage(this.enabled ? `${this.manifestData.name} は有効になっています` : `${this.manifestData.name} は無効になっています`);
         });
       });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      this.initializeUI();
-    });
+    this.initializeUI();
   }
 
   private initializeUI(): void {
@@ -70,12 +71,12 @@ class PopupManager {
     const extensionLink = document.getElementById('extension_link') as HTMLAnchorElement;
     if (extensionLink) {
       extensionLink.href = `chrome://extensions/?id=${chrome.runtime.id}`;
-      this.clickURL(extensionLink);
+      clickURL(extensionLink);
     }
 
-    this.clickURL(document.getElementById('issue-link'));
-    this.clickURL(document.getElementById('store_link'));
-    this.clickURL(document.getElementById('github-link'));
+    clickURL(document.getElementById('issue-link'));
+    clickURL(document.getElementById('store_link'));
+    clickURL(document.getElementById('github-link'));
 
     const extensionId = document.getElementById('extension-id');
     if (extensionId) {
@@ -101,16 +102,7 @@ class PopupManager {
         permissionInfo.textContent = permissions.join(', ');
       }
 
-      let siteAccess: string = '';
-      if (result.origins && result.origins.length > 0) {
-        if (result.origins.includes("<all_urls>")) {
-          siteAccess = "すべてのサイト";
-        } else {
-          siteAccess = result.origins.join("<br>");
-        }
-      } else {
-        siteAccess = "クリックされた場合のみ";
-      }
+      const siteAccess = getSiteAccessText(result.origins);
       const siteAccessElement = document.getElementById('site-access');
       if (siteAccessElement) {
         siteAccessElement.innerHTML = siteAccess;
@@ -134,33 +126,9 @@ class PopupManager {
     });
   }
 
-  private clickURL(link: HTMLElement | string | null): void {
-    if (!link) return;
-
-    const url = (link instanceof HTMLElement && link.hasAttribute('href')) ? (link as HTMLAnchorElement).href : (typeof link === 'string' ? link : null);
-    if (!url) return;
-
-    if (link instanceof HTMLElement) {
-      link.addEventListener('click', (event) => {
-        event.preventDefault();
-        chrome.tabs.create({ url });
-      });
-    }
-  }
-
-  private showMessage(message: string, timestamp: string = this.dateTime()) {
+  private showMessage(message: string, timestamp: string = dateTime()) {
     this.panel.messageOutput(message, timestamp);
-  }
-
-  private dateTime(): string {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
   }
 }
 
-new PopupManager();
+document.addEventListener('DOMContentLoaded', () => new PopupManager());
