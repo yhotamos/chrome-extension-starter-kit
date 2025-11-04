@@ -1,8 +1,12 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const ExtensionReloader = require("./scripts/ext-reloader");
+
+const isDev = process.env.NODE_ENV !== "production";
 
 module.exports = {
-  mode: "production",
+  mode: isDev ? "development" : "production",
+  devtool: isDev ? "inline-source-map" : false,
   entry: {
     background: "./src/background.ts",
     content: "./src/content.ts",
@@ -10,7 +14,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "[name].js"
+    filename: "[name].js",
+    clean: true
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"]
@@ -19,7 +24,7 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: ["style-loader", "css-loader"]
       },
       {
         test: /\.tsx?$/,
@@ -28,17 +33,16 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: "./public",
-          to: "./"
-        }
-      ]
-    })
-  ],
+  plugins: (() => {
+    const plugins = [
+      new CopyWebpackPlugin({ patterns: [{ from: "./public", to: "./" }] })
+    ];
+    if (isDev) {
+      plugins.unshift(new ExtensionReloader());
+    }
+    return plugins;
+  })(),
   performance: {
-    hints: false
+    hints: isDev ? false : "warning"
   }
 };

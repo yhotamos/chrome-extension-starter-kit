@@ -6,6 +6,7 @@
 
 - **TypeScript 対応**: 静的型付けにより，開発効率とコードの品質を向上させます．
 - **webpack 導入済み**: TypeScript ファイルを JavaScript にコンパイルし，ファイルをバンドルします．
+- **オートリロード機能**: 開発モードでファイルを変更すると自動的に拡張機能がリロードされます（WebSocket 使用）．
 - **型安全な設定管理**: 設定の型定義とデフォルト値を一元管理できます．
 - **ユーティリティ関数**: 日時フォーマット，DOM 操作，権限管理などの汎用関数を提供．- **Bootstrap UI**: モダンで使いやすいポップアップ UI をすぐに利用できます．
 - **基本的なファイル構成**: 開発をすぐに開始できるよう，必要なファイルが揃っています．
@@ -25,10 +26,10 @@ cd chrome-extension-starter-kit
 # 依存関係をインストール
 npm install
 
-# 開発モード（ファイル変更を自動監視）
+# 開発モード（ファイル変更を自動監視 + オートリロード）
 npm run watch
 
-# または，通常ビルド
+# または，本番用ビルド
 npm run build
 ```
 
@@ -48,6 +49,8 @@ chrome-extension-starter-kit/
 │   ├── content.ts           # コンテンツスクリプト
 │   ├── popup.ts             # ポップアップスクリプト
 │   ├── settings.ts          # 設定の型定義とデフォルト値
+│   ├── dev/                 # 開発用機能
+│   │   └── reload.ts        # オートリロード機能
 │   ├── components/          # UI コンポーネント
 │   │   └── popup-panel.ts
 │   └── utils/               # ユーティリティ関数
@@ -60,6 +63,8 @@ chrome-extension-starter-kit/
 │   ├── popup.html          # ポップアップ HTML
 │   ├── popup.css           # ポップアップスタイル
 │   └── icons/              # アイコン画像
+├── scripts/
+│   └── ext-reloader.js     # webpack プラグイン（オートリロード用）
 ├── docs/
 │   └── SETTINGS.md         # 設定機能の詳細ガイド
 └── dist/                   # ビルド成果物（自動生成）
@@ -216,14 +221,11 @@ clickURL(linkElement); // 新しいタブで開く
 2. **コードを編集**
 
    - `src/` 配下のファイルを編集
-   - 保存すると自動でビルドされる
+   - 保存すると自動でビルドされ，拡張機能が自動リロードされます
 
-3. **拡張機能をリロード**
-
-   - `chrome://extensions/` でリロードボタンをクリック
-
-4. **動作確認**
+3. **動作確認**
    - ポップアップやコンソールで確認
+   - オートリロード機能により，手動でのリロードは不要です
 
 ### よくある開発タスク
 
@@ -265,7 +267,37 @@ const data = await fetchData("https://api.example.com/data");
 }
 ```
 
+## オートリロード機能について
+
+開発モード（`npm run watch`）では，ファイルを保存すると自動的に拡張機能がリロードされます．
+
+### 仕組み
+
+- webpack が watch モードで起動し，ファイル変更を監視
+- ビルド完了後，WebSocket サーバー（ポート 6571）にリロード信号を送信
+- 拡張機能の background スクリプトが信号を受け取り，`chrome.runtime.reload()` を実行
+
+### 注意事項
+
+- オートリロード機能は **開発モードのみ** で動作します
+- 本番ビルド（`npm run build`）では含まれません
+- WebSocket サーバーはローカルホスト（localhost:6571）で動作します
+- 拡張機能全体が再起動されるため，状態は保持されません
+- **Service Worker が有効である必要があります**
+  - `chrome://extensions/` で拡張機能の「Service Worker」の横に「無効」と表示されている場合，「ビューを検証」をクリックして有効化してください
+  - Service Worker が無効だと WebSocket 接続ができず，オートリロードが動作しません
+
 ## トラブルシューティング
+
+### オートリロードが動作しない
+
+1. **Service Worker が有効か確認**
+   - `chrome://extensions/` で拡張機能の詳細を開く
+   - 「Service Worker」の横に「無効」と表示されている場合，「ビューを検証」をクリック
+   - DevTools が開き，Service Worker が有効化されます
+2. `npm run watch` が正常に起動しているか確認
+3. ブラウザのコンソール（または Service Worker の DevTools）で WebSocket 接続エラーがないか確認
+4. ポート 6571 が他のプロセスに使用されていないか確認
 
 ### ビルドエラーが出る
 
