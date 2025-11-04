@@ -9,7 +9,7 @@
     "watch": "cross-env NODE_ENV=development webpack --watch"
   },
   "keywords": [],
-  "author": "Yhotamos (yhotta240)",
+  "author": "yhotta240",
   "license": "MIT",
   "devDependencies": {
     "@types/chrome": "^0.1.6",
