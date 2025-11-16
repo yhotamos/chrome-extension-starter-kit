@@ -52,7 +52,7 @@ export class PopupPanel {
     const isPanelVisible = panelHeight > 50 && isOpen;
 
     this.closeButton.style.display = isPanelVisible ? 'block' : 'none';
-    this.closeButton.children[0].setAttribute('style', `display: ${isPanelVisible ? 'block' : 'none'}`);
+    // this.closeButton.children[0].setAttribute('style', `display: ${isPanelVisible ? 'block' : 'none'}`);
     this.panelButton.style.display = isPanelVisible ? 'none' : 'block';
     this.panelButton.children[0].setAttribute('style', `display: ${isPanelVisible ? 'none' : 'block'}`);
 
