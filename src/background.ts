@@ -1,4 +1,4 @@
-import { reloadExtension } from "./dev/reload";
+import { reloadExtension } from "../scripts/reload";
 
 /**
  * Background Script を初期化
