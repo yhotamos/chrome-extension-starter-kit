@@ -35,7 +35,30 @@ module.exports = {
   },
   plugins: (() => {
     const plugins = [
-      new CopyWebpackPlugin({ patterns: [{ from: "./public", to: "./" }] })
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: "./public",
+            to: "./",
+            transform(content, absoluteFrom) {
+              if (isDev) return content;
+              // production ビルド時に manifest.json から "tabs" パーミッションを削除
+              if (absoluteFrom.endsWith('manifest.json')) {
+                const manifest = JSON.parse(content.toString());
+
+                if (Array.isArray(manifest.permissions)) {
+                  manifest.permissions = manifest.permissions.filter(p => p !== 'tabs');
+                }
+
+                const updated = JSON.stringify(manifest, null, 2);
+                return Buffer.from(updated);
+              }
+
+              return content;
+            }
+          }
+        ]
+      })
     ];
     if (isDev) {
       plugins.unshift(new ExtensionReloader());
