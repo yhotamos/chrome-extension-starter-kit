@@ -107,19 +107,6 @@ chrome-extension-starter-kit/
   };
   ```
 
-- **`src/utils/settings.ts`**  
-  設定の読み書きを行うユーティリティ関数を提供します．
-
-  ```typescript
-  import { getSetting, saveSetting } from "./utils/settings";
-
-  // 設定の取得
-  const theme = await getSetting("theme");
-
-  // 設定の保存
-  await saveSetting("theme", "dark");
-  ```
-
 #### ユーティリティ関数
 
 `src/utils/` 配下に汎用的な関数をまとめています．
@@ -177,22 +164,11 @@ clickURL(linkElement); // 新しいタブで開く
    <input type="text" id="my-option" class="form-control" />
    ```
 
-3. **イベントリスナーを設定** (`src/popup.ts`)
+3. **イベントリスナーを設定**
 
-   ```typescript
-   import { getSetting, saveSetting } from "./utils/settings";
+   UI の変更をリッスンしてビジネスロジックを実装します．
 
-   // 読み込み
-   const value = await getSetting("myOption");
-   inputElement.value = value || "";
-
-   // 保存
-   inputElement.addEventListener("change", async (e) => {
-     await saveSetting("myOption", e.target.value);
-   });
-   ```
-
-### 設定・UI を編集するファイル
+### UI の変更
 
 - **マニフェストファイル**
   `public/manifest.json`

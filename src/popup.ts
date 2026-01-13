@@ -175,24 +175,6 @@ class PopupManager {
     githubLink.textContent = this.manifestMetadata.github_url;
   }
 
-  /**
-   * 設定値を保存するヘルパーメソッド
-   * @param key - 設定のキー名
-   * @param value - 保存する値
-   * @param message - 保存成功時に表示するメッセージ
-   */
-  private saveSetting(key: string, value: any, message?: string): void {
-    chrome.storage.local.get(['settings'], (data) => {
-      const settings = data.settings || {};
-      settings[key] = value;
-      chrome.storage.local.set({ settings }, () => {
-        if (message) {
-          this.showMessage(message);
-        }
-      });
-    });
-  }
-
   private showMessage(message: string, timestamp: string = dateTime()) {
     this.panel.messageOutput(message, timestamp);
   }
