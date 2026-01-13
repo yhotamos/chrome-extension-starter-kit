@@ -6,24 +6,31 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production webpack",
-    "watch": "cross-env NODE_ENV=development webpack --watch"
+    "watch": "cross-env NODE_ENV=development webpack --watch",
+    "zip": "npm run build && npx tsx scripts/create-zip.mts",
+    "publish": "npm run build && npx tsx scripts/publish.mts"
   },
   "keywords": [],
   "author": "yhotta240",
   "license": "MIT",
   "devDependencies": {
+    "@types/archiver": "^7.0.0",
     "@types/chrome": "^0.1.6",
     "copy-webpack-plugin": "^13.0.1",
     "cross-env": "^10.1.0",
     "ts-loader": "^9.5.4",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.2",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",
     "ws": "^8.18.3"
   },
   "dependencies": {
+    "archiver": "^7.0.1",
     "bootstrap": "^5.3.8",
+    "chrome-webstore-upload-cli": "^3.5.0",
     "css-loader": "^7.1.2",
+    "dotenv": "^17.2.3",
     "style-loader": "^4.0.0"
   }
 }
