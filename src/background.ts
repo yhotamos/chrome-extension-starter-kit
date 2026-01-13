@@ -1,22 +1,24 @@
 import { reloadTargetTabs } from "./utils/reload-tabs";
 import { reloadExtension } from "../scripts/reload";
 
-// テスト用のターゲットURLパターン
+// 開発用のターゲットURLパターン
 const targetUrls = ["https://www.google.com/*"];
-console.log("ターゲットURLパターン:", targetUrls);
+
+/** 開発環境の場合，拡張機能をリロード */
+function developExtension(): void {
+  if (process.env.NODE_ENV === "development") {
+    console.log("開発環境：", process.env.NODE_ENV);
+    console.log("ターゲットタブのリロードを開始します", targetUrls);
+    reloadExtension();
+    reloadTargetTabs(targetUrls);
+  }
+}
 
 /**
  * Background Script を初期化
  */
 function initialize(): void {
-  console.log("現在の環境：", process.env.NODE_ENV);
-
-  if (process.env.NODE_ENV === "development") {
-    reloadExtension();
-  }
-
-  // 拡張機能起動時にターゲットタブをリロード
-  reloadTargetTabs(targetUrls);
+  developExtension();
 }
 
 initialize();
