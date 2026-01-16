@@ -37,12 +37,12 @@ module.exports = {
     const plugins = [
       new CopyWebpackPlugin({
         patterns: [
-          // public の静的ファイルをコピー（manifest.dev.json / manifest.prod.json は除外）
+          // public の静的ファイルをコピー（manifest.dev.json / manifest.prod.json / manifest.json は除外）
           {
             from: "./public",
             to: "./",
             globOptions: {
-              ignore: ["**/manifest.dev.json", "**/manifest.prod.json"]
+              ignore: ["**/manifest.dev.json", "**/manifest.prod.json", "**/manifest.json"]
             }
           },
           // 適切な manifest を manifest.json として出力
