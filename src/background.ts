@@ -1,24 +1,10 @@
-import { reloadTargetTabs } from "./utils/reload-tabs";
-import { reloadExtension } from "../scripts/reload";
-
-// 開発用のターゲットURLパターン
-const targetUrls = ["https://www.google.com/*"];
-
-/** 開発環境の場合，拡張機能をリロード */
-function developExtension(): void {
-  if (process.env.NODE_ENV === "development") {
-    console.log("開発環境：", process.env.NODE_ENV);
-    console.log("ターゲットタブのリロードを開始します", targetUrls);
-    reloadExtension();
-    reloadTargetTabs(targetUrls);
-  }
-}
+import "./utils/permissions";
 
 /**
- * Background Script を初期化
+ * Background Script を初期化（本番／汎用の初期化処理のみ）
  */
 function initialize(): void {
-  developExtension();
+  // 本番用の初期化処理をここに記述する．開発専用のリロード処理等は含めない．
 }
 
 initialize();
