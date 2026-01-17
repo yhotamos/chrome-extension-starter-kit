@@ -117,7 +117,6 @@ class PopupManager {
 
     clickURL(document.getElementById('issue-link'));
     clickURL(document.getElementById('store_link'));
-    clickURL(document.getElementById('github-link'));
 
     const extensionId = document.getElementById('extension-id');
     if (extensionId) {
@@ -173,6 +172,7 @@ class PopupManager {
     const githubLink = document.getElementById('github-link') as HTMLAnchorElement;
     githubLink.href = this.manifestMetadata.github_url;
     githubLink.textContent = this.manifestMetadata.github_url;
+    clickURL(document.getElementById('github-link'));
   }
 
   private showMessage(message: string, timestamp: string = dateTime()) {
