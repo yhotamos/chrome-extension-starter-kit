@@ -1,14 +1,14 @@
 const DEV_SERVER_URL = "ws://localhost:6571";
 
 /**
- * 開発用ホットリロード機能を初期化
+ * 開発用オートリロード機能を初期化
  */
 export function reloadExtension(): void {
   try {
     const ws = new WebSocket(DEV_SERVER_URL);
 
     ws.onmessage = () => {
-      console.log("拡張機能のホットリロードが実行されました");
+      console.log("拡張機能のオートリロードが実行されました");
       chrome.runtime.reload();
     };
 
