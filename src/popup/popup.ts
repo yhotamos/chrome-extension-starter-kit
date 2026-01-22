@@ -1,9 +1,10 @@
+import './popup.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { PopupPanel } from './popup/panel';
-import { dateTime } from './utils/date';
-import { clickURL } from './utils/dom';
-import { getSiteAccessText } from './utils/permissions';
-import meta from '../public/manifest.meta.json';
+import { PopupPanel } from '../popup/panel';
+import { dateTime } from '../utils/date';
+import { clickURL } from '../utils/dom';
+import { getSiteAccessText } from '../utils/permissions';
+import meta from '../../public/manifest.meta.json';
 
 class PopupManager {
   private panel: PopupPanel;
