@@ -57,8 +57,8 @@ module.exports = {
           {
             from: PUBLIC,
             to: "./",
-            globOptions: {
-              ignore: ["**/manifest.dev.json", "**/manifest.prod.json"]
+            filter: (resourcePath) => {
+              return !/manifest\.(dev|prod)\.json$/.test(resourcePath);
             }
           },
           // 適切な manifest を manifest.json として出力
