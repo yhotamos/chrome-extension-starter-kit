@@ -124,7 +124,7 @@ class PopupManager {
 
     const issuesLink = document.getElementById('issues-link') as HTMLAnchorElement;
     if (issuesLink) {
-      issuesLink.href = this.manifestData.issues_url;
+      issuesLink.href = this.manifestMetadata.issues_url;
       clickURL(issuesLink);
     }
 
