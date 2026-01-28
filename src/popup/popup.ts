@@ -31,12 +31,9 @@ class PopupManager {
       }
       this.showMessage(`${this.manifestData.short_name} が起動しました`);
 
-      // 設定値の読み込み例
-      // const settings = data.settings || {};
-      // if (settings.theme) {
-      //   const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
-      //   if (themeSelect) themeSelect.value = settings.theme;
-      // }
+      const settings = data.settings || {};
+      const theme = settings.theme || 'system';
+      this.applyTheme(theme);
     });
   }
 
@@ -55,7 +52,38 @@ class PopupManager {
   }
 
   private setupSettingsListeners(): void {
-    // 設定項目のイベントリスナー例
+    // テーマアイコンメニューのイベントリスナー
+    const themeButton = document.getElementById('theme-button');
+    const themeMenu = document.getElementById('theme-menu');
+    if (themeButton && themeMenu) {
+      themeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        themeMenu.classList.toggle('d-none');
+      });
+
+      // テーマオプションのクリックイベント
+      const options = Array.from(themeMenu.querySelectorAll('.theme-option')) as HTMLButtonElement[];
+      options.forEach((btn) => {
+        btn.addEventListener('click', (ev) => {
+          const value = (ev.currentTarget as HTMLButtonElement).dataset.theme || 'system';
+          this.applyTheme(value);
+          // 保存
+          chrome.storage.local.get(['settings'], (data) => {
+            const settings = data.settings || {};
+            settings.theme = value;
+            chrome.storage.local.set({ settings }, () => {
+              this.showMessage(`テーマを「${value}」に変更しました`);
+            });
+          });
+          // メニューを閉じる
+          themeMenu.classList.add('d-none');
+        });
+      });
+      // メニュー外クリックで閉じる
+      document.addEventListener('click', () => themeMenu.classList.add('d-none'));
+    }
+
+    // 他の設定項目のイベントリスナー例
     //
     // セレクトボックスの例:
     // const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
@@ -83,6 +111,35 @@ class PopupManager {
     //     this.saveSetting('fontSize', value, `フォントサイズを${value}pxに変更しました`);
     //   });
     // }
+  }
+
+  private applyTheme(theme: string): void {
+    // 簡素化: system は一度だけ判定し、常時リスナーは使わない
+    let themeColor = theme;
+    document.body.classList.remove('theme-light', 'theme-dark');
+
+    if (theme === 'system') {
+      // OS の好みを一度だけ参照し、その結果を適用する
+      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      themeColor = isSystemDark ? 'dark' : 'light';
+      document.body.classList.add(`theme-${themeColor}`);
+      document.documentElement.setAttribute('data-bs-theme', themeColor);
+    } else if (theme === 'light') {
+      themeColor = 'light';
+      document.body.classList.add('theme-light');
+      document.documentElement.setAttribute('data-bs-theme', 'light');
+    } else {
+      themeColor = 'dark';
+      document.body.classList.add('theme-dark');
+      document.documentElement.setAttribute('data-bs-theme', 'dark');
+    }
+
+    // 選択中のオプションをハイライト
+    const options = Array.from(document.querySelectorAll('#theme-menu .theme-option')) as HTMLButtonElement[];
+    options.forEach((b) => {
+      if ((b.dataset.theme || 'system') === (theme || 'system')) b.classList.add('active');
+      else b.classList.remove('active');
+    });
   }
 
   private initializeUI(): void {
