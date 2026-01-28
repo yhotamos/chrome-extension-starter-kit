@@ -110,19 +110,23 @@ class PopupManager {
   }
 
   private setupInfoTab(): void {
-    const storeLink = document.getElementById('store_link') as HTMLAnchorElement;
+    const storeLink = document.getElementById('store-link') as HTMLAnchorElement;
     if (storeLink) {
       storeLink.href = `https://chrome.google.com/webstore/detail/${chrome.runtime.id}`;
       clickURL(storeLink);
     }
 
-    const extensionLink = document.getElementById('extension_link') as HTMLAnchorElement;
+    const extensionLink = document.getElementById('extension-link') as HTMLAnchorElement;
     if (extensionLink) {
       extensionLink.href = `chrome://extensions/?id=${chrome.runtime.id}`;
       clickURL(extensionLink);
     }
 
-    clickURL(document.getElementById('issue-link'));
+    const issuesLink = document.getElementById('issues-link') as HTMLAnchorElement;
+    if (issuesLink) {
+      issuesLink.href = this.manifestData.issues_url;
+      clickURL(issuesLink);
+    }
 
     const extensionId = document.getElementById('extension-id');
     if (extensionId) {
