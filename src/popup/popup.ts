@@ -129,41 +129,31 @@ class PopupManager {
     }
 
     const extensionId = document.getElementById('extension-id');
-    if (extensionId) {
-      extensionId.textContent = chrome.runtime.id;
-    }
+    if (extensionId) extensionId.textContent = chrome.runtime.id;
+
     const extensionName = document.getElementById('extension-name');
-    if (extensionName) {
-      extensionName.textContent = this.manifestData.name;
-    }
+    if (extensionName) extensionName.textContent = this.manifestData.name;
+
     const extensionVersion = document.getElementById('extension-version');
-    if (extensionVersion) {
-      extensionVersion.textContent = this.manifestData.version;
-    }
+    if (extensionVersion) extensionVersion.textContent = this.manifestData.version;
+
     const extensionDescription = document.getElementById('extension-description');
-    if (extensionDescription) {
-      extensionDescription.textContent = this.manifestData.description ?? '';
-    }
+    if (extensionDescription) extensionDescription.textContent = this.manifestData.description ?? '';
 
     chrome.permissions.getAll((result) => {
       const permissionInfo = document.getElementById('permission-info');
-      const permissions = result.permissions;
-      if (permissionInfo && permissions) {
-        permissionInfo.textContent = permissions.join(', ');
+      if (permissionInfo && result.permissions) {
+        permissionInfo.textContent = result.permissions.join(', ');
       }
 
       const siteAccess = getSiteAccessText(result.origins);
       const siteAccessElement = document.getElementById('site-access');
-      if (siteAccessElement) {
-        siteAccessElement.innerHTML = siteAccess;
-      }
+      if (siteAccessElement) siteAccessElement.innerHTML = siteAccess;
     });
 
     chrome.extension.isAllowedIncognitoAccess((isAllowedAccess) => {
       const incognitoEnabled = document.getElementById('incognito-enabled');
-      if (incognitoEnabled) {
-        incognitoEnabled.textContent = isAllowedAccess ? '有効' : '無効';
-      }
+      if (incognitoEnabled) incognitoEnabled.textContent = isAllowedAccess ? '有効' : '無効';
     });
 
     const languageMap: { [key: string]: string } = { 'en': '英語', 'ja': '日本語' };
@@ -182,7 +172,7 @@ class PopupManager {
     const githubLink = document.getElementById('github-link') as HTMLAnchorElement;
     githubLink.href = this.manifestMetadata.github_url;
     githubLink.textContent = this.manifestMetadata.github_url;
-    clickURL(document.getElementById('github-link'));
+    if (githubLink) clickURL(githubLink);
   }
 
   private showMessage(message: string, timestamp: string = dateTime()) {
