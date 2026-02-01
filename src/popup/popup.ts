@@ -7,6 +7,7 @@ import { getSiteAccessText } from '../utils/permissions';
 import { DEFAULT_SETTINGS, Settings, Theme } from '../settings/settings';
 import { getSettings, setSettings, isEnabled, setEnabled } from '../settings/storage';
 import meta from '../../public/manifest.meta.json';
+import { applyTheme, initThemeMenu } from './theme';
 
 type ManifestMetadata = {
   issues_url?: string;
@@ -47,13 +48,13 @@ class PopupManager {
       if (this.enabledElement) this.enabledElement.checked = this.enabled;
 
       const theme = this.settings.theme || DEFAULT_SETTINGS.theme;
-      this.applyTheme(theme);
+      applyTheme(theme);
 
       this.showMessage(`${this.manifestData.short_name} が起動しました`);
     } catch (err) {
       console.error('loadInitialState error', err);
       this.showMessage('設定の読み込みに失敗しました');
-      this.applyTheme(DEFAULT_SETTINGS.theme);
+      applyTheme(DEFAULT_SETTINGS.theme);
     }
   }
 
@@ -69,31 +70,11 @@ class PopupManager {
       }
     });
 
-    // テーマアイコンメニューのイベントリスナー
-    const themeButton = document.getElementById('theme-button');
-    const themeMenu = document.getElementById('theme-menu');
-    if (themeButton && themeMenu) {
-      themeButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        themeMenu.classList.toggle('d-none');
-      });
-
-      // テーマオプションのクリックイベント
-      const options = Array.from(themeMenu.querySelectorAll('.theme-option')) as HTMLButtonElement[];
-      options.forEach((btn) => {
-        btn.addEventListener('click', async (ev) => {
-          let value = (ev.currentTarget as HTMLButtonElement).dataset.theme as Theme | undefined;
-          if (!value || (value !== 'system' && value !== 'light' && value !== 'dark')) value = 'system';
-          this.settings = { ...this.settings, theme: value };
-          this.applyTheme(value);
-          this.updateSettings(this.settings, `テーマを「${value}」に変更しました`, 'テーマ設定の保存に失敗しました');
-          // メニューを閉じる
-          themeMenu.classList.add('d-none');
-        });
-      });
-      // メニュー外クリックで閉じる
-      document.addEventListener('click', () => themeMenu.classList.add('d-none'));
-    }
+    // テーマ設定のイベントリスナー
+    const theme = this.settings.theme || DEFAULT_SETTINGS.theme;
+    initThemeMenu(async (value: Theme) => {
+      await this.updateSettings({ theme: value }, `テーマを ${value} に変更しました`, 'テーマ設定の保存に失敗しました');
+    });
 
     // 他の設定項目のイベントリスナー例
 
@@ -119,33 +100,6 @@ class PopupManager {
       console.error('failed to save settings', err);
       this.showMessage(failedMessage || '設定の保存に失敗しました');
     }
-  }
-
-  private applyTheme(theme: Theme): void {
-    let themeColor = theme;
-    document.body.classList.remove('theme-light', 'theme-dark');
-
-    if (theme === 'system') {
-      // OSのカラースキームに合わせる
-      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeColor = isSystemDark ? 'dark' : 'light';
-      document.body.classList.add(`theme-${themeColor}`);
-      document.documentElement.setAttribute('data-bs-theme', themeColor);
-    } else if (theme === 'light') {
-      themeColor = 'light';
-      document.body.classList.add('theme-light');
-      document.documentElement.setAttribute('data-bs-theme', 'light');
-    } else {
-      themeColor = 'dark';
-      document.body.classList.add('theme-dark');
-      document.documentElement.setAttribute('data-bs-theme', 'dark');
-    }
-
-    const options = Array.from(document.querySelectorAll('#theme-menu .theme-option')) as HTMLButtonElement[];
-    options.forEach((b) => {
-      if ((b.dataset.theme || 'system') === (theme || 'system')) b.classList.add('active');
-      else b.classList.remove('active');
-    });
   }
 
   private initializeUI(): void {
