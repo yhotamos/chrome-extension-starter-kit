@@ -152,13 +152,13 @@ export class PopupPanel {
 
   public messageOutput(message: string, datetime: string): void {
     if (this.messageDiv) {
-      this.messageDiv.innerHTML += `<p class="m-0">[${datetime}] ${message}</p>`;
+      this.messageDiv.innerHTML += `<p class="m-0 small">[${datetime}] ${message}</p>`;
     }
   }
 
   public clearMessage(): void {
     if (this.messageDiv) {
-      this.messageDiv.innerHTML = '<p class="m-0"></p>';
+      this.messageDiv.innerHTML = '<p class="m-0 small"></p>';
     }
   }
 }
