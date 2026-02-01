@@ -2,7 +2,7 @@ import './popup.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { PopupPanel } from '../popup/panel';
 import { dateTime } from '../utils/date';
-import { clickURL } from '../utils/dom';
+import { openLinkNewTab } from '../utils/dom';
 import { getSiteAccessText } from '../utils/permissions';
 import { DEFAULT_SETTINGS, Settings, Theme } from '../settings/settings';
 import { getSettings, setSettings, isEnabled, setEnabled } from '../settings/storage';
@@ -176,20 +176,20 @@ class PopupManager {
     const storeLink = document.getElementById('store-link') as HTMLAnchorElement;
     if (storeLink) {
       storeLink.href = `https://chrome.google.com/webstore/detail/${chrome.runtime.id}`;
-      clickURL(storeLink);
+      openLinkNewTab(storeLink);
     }
 
     const extensionLink = document.getElementById('extension-link') as HTMLAnchorElement;
     if (extensionLink) {
       extensionLink.href = `chrome://extensions/?id=${chrome.runtime.id}`;
-      clickURL(extensionLink);
+      openLinkNewTab(extensionLink);
     }
 
     const issuesLink = document.getElementById('issues-link') as HTMLAnchorElement;
     const issuesHref = this.manifestMetadata.issues_url;
     if (issuesLink && issuesHref) {
       issuesLink.href = issuesHref;
-      clickURL(issuesLink);
+      openLinkNewTab(issuesLink);
     }
 
     const extensionId = document.getElementById('extension-id');
@@ -238,7 +238,7 @@ class PopupManager {
     if (githubLink && githubHref) {
       githubLink.href = githubHref;
       githubLink.textContent = githubHref;
-      clickURL(githubLink);
+      openLinkNewTab(githubLink);
     }
   }
 
