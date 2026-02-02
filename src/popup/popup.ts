@@ -72,7 +72,6 @@ class PopupManager {
     });
 
     // テーマ設定のイベントリスナー
-    const theme = this.settings.theme || DEFAULT_SETTINGS.theme;
     initThemeMenu(async (value: Theme) => {
       await this.updateSettings({ theme: value }, `テーマを ${value} に変更しました`, 'テーマ設定の保存に失敗しました');
     });
@@ -135,14 +134,39 @@ class PopupManager {
     if (enabledLabel) {
       enabledLabel.textContent = `${short_name} を有効にする`;
     }
-    const newTabButton = document.getElementById('new-tab-button');
-    if (newTabButton) {
-      newTabButton.addEventListener('click', () => {
-        chrome.tabs.create({ url: 'popup.html' });
-      });
-    }
 
+    this.setupMoreMenu();
     this.setupInfoTab();
+  }
+
+  private setupMoreMenu(): void {
+    const moreButton = document.getElementById('more-button');
+    const moreMenu = document.getElementById('more-menu');
+    const themeButton = document.getElementById('theme-button');
+    const newTabButton = document.getElementById('new-tab-button');
+
+    if (!moreButton || !moreMenu) return;
+
+    moreButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      moreMenu.classList.toggle('d-none');
+    });
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as Node;
+      if (!moreMenu.contains(target) && !moreButton.contains(target)) {
+        moreMenu.classList.add('d-none');
+      }
+    });
+
+    themeButton?.addEventListener('click', () => {
+      moreMenu.classList.add('d-none');
+    });
+
+    newTabButton?.addEventListener('click', () => {
+      chrome.tabs.create({ url: 'popup.html' });
+      moreMenu.classList.add('d-none');
+    });
   }
 
   private setupInfoTab(): void {

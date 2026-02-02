@@ -1,7 +1,3 @@
-/**
- * シェア機能のユーティリティ
- */
-
 export type SharePlatform = 'twitter' | 'facebook' | 'copy';
 
 export interface ShareConfig {
@@ -52,42 +48,15 @@ async function executeShare(platform: SharePlatform, config: ShareConfig): Promi
 }
 
 /**
- * シェアメニューの初期化
+ * シェア機能の初期化
  */
 export function initShareMenu(
   onShare?: (platform: SharePlatform, success: boolean) => void
 ): void {
-  const shareButton = document.getElementById('share-button');
-  const shareMenu = document.getElementById('share-menu');
+  const moreMenu = document.getElementById('more-menu');
   const shareOptions = document.querySelectorAll('.share-option');
 
-  if (!shareButton || !shareMenu) return;
-
-  // シェアボタンのクリックでメニュー表示/非表示
-  shareButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    shareMenu.classList.toggle('d-none');
-  });
-
-  // メニュー外クリックで閉じる
-  document.addEventListener('click', (e) => {
-    const target = e.target as Node;
-    const isInsideShareMenu = shareMenu.contains(target);
-    const isShareButton = shareButton.contains(target);
-    
-    if (!isInsideShareMenu && !isShareButton) {
-      shareMenu.classList.add('d-none');
-    }
-  });
-
-  // 他のドロップダウンボタンがクリックされたら閉じる
-  const otherButtons = ['theme-button', 'new-tab-button'];
-  otherButtons.forEach((id) => {
-    const button = document.getElementById(id);
-    button?.addEventListener('click', () => {
-      shareMenu.classList.add('d-none');
-    });
-  });
+  if (!moreMenu) return;
 
   // 各シェアオプションのクリック処理
   shareOptions.forEach((option) => {
@@ -123,9 +92,6 @@ export function initShareMenu(
 
       // コールバック実行
       onShare?.(platform, success);
-
-      // メニューを閉じる
-      shareMenu.classList.add('d-none');
     });
   });
 }

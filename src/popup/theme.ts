@@ -1,6 +1,8 @@
 import { Theme } from '../settings/settings';
 
-// テーマを適用
+/**
+ * テーマ適用
+ */
 export function applyTheme(theme: Theme): void {
   const isSystem = theme === 'system';
   const themeColor = isSystem
@@ -11,14 +13,15 @@ export function applyTheme(theme: Theme): void {
   document.body.classList.toggle('theme-dark', themeColor === 'dark');
   document.documentElement.setAttribute('data-bs-theme', themeColor);
 
-  // メニューの active 更新（存在すれば）
   document.querySelectorAll('#theme-menu .theme-option').forEach((el) => {
     const btn = el as HTMLButtonElement;
     btn.classList.toggle('active', (btn.dataset.theme || 'system') === theme);
   });
 }
 
-// テーマメニュー初期化
+/**
+ * テーマメニューの初期化
+ */
 export function initThemeMenu(onChange: (theme: Theme) => Promise<void>): void {
   const btn = document.getElementById('theme-button');
   const menu = document.getElementById('theme-menu');
@@ -42,5 +45,12 @@ export function initThemeMenu(onChange: (theme: Theme) => Promise<void>): void {
     menu.classList.add('d-none');
   });
 
+  // メニュー外クリックで閉じる
   document.addEventListener('click', () => menu.classList.add('d-none'));
+
+  // その他メニューボタンがクリックされたら閉じる
+  const moreButton = document.getElementById('more-button');
+  moreButton?.addEventListener('click', () => {
+    menu.classList.add('d-none');
+  });
 }

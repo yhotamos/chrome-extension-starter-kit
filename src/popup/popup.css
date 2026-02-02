@@ -26,8 +26,7 @@ html {
 
 /* ボタン共通 */
 #theme-button,
-#new-tab-button,
-#share-button {
+#more-button {
   width: 28px;
   height: 28px;
   /* border: none; */
@@ -40,8 +39,7 @@ html {
 }
 
 #theme-button:hover,
-#new-tab-button:hover,
-#share-button:hover {
+#more-button:hover {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
@@ -53,8 +51,8 @@ html {
   z-index: 2500;
 }
 
-/* シェアメニュー */
-#share-menu {
+/* その他メニュー */
+#more-menu {
   position: absolute;
   top: 32px;
   right: 0;
@@ -62,7 +60,8 @@ html {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-#share-menu .share-option {
+#more-menu .share-option,
+#more-menu .more-option {
   border: none;
   background: transparent;
   color: inherit;
@@ -71,11 +70,13 @@ html {
   transition: background-color 0.15s ease;
 }
 
-#share-menu .share-option:hover {
+#more-menu .share-option:hover,
+#more-menu .more-option:hover {
   background-color: rgba(0, 0, 0, 0.06);
 }
 
-[data-bs-theme="dark"] #share-menu .share-option:hover {
+[data-bs-theme="dark"] #more-menu .share-option:hover,
+[data-bs-theme="dark"] #more-menu .more-option:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
