@@ -14,7 +14,39 @@
         <img src="/icons/icon.png" class="my-auto mx-2" alt="message clear button" height="24">
         <h1 class="my-auto fs-3" id="title-header"></h1>
       </div>
-      <div class="d-flex align-items-center gap-2">
+      <div class="d-flex align-items-center gap-1">
+        <!-- シェア -->
+        <div class="position-relative">
+          <button type="button" class="btn btn-sm p-1 d-flex justify-content-center align-items-center"
+            id="share-button" aria-label="シェア" title="シェア">
+            <i class="bi bi-share" style="font-size: 16px; line-height: 1;"></i>
+          </button>
+          <div id="share-menu" class="card p-2 d-none position-absolute"
+            style="right: 0; top: 100%; z-index: 1000; min-width: 160px;">
+            <div class="d-flex flex-column gap-1">
+              <button class="btn btn-sm share-option d-flex align-items-center gap-2 text-start" data-share="twitter"
+                title="X (Twitter)でシェア">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path
+                    d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
+                </svg>
+                <span class="small">X (Twitter)</span>
+              </button>
+              <button class="btn btn-sm share-option d-flex align-items-center gap-2 text-start" data-share="facebook"
+                title="Facebookでシェア">
+                <i class="bi bi-facebook" style="font-size: 16px; color: #1877f2;"></i>
+                <span class="small">Facebook</span>
+              </button>
+              <hr class="my-1">
+              <button class="btn btn-sm share-option d-flex align-items-center gap-2 text-start" data-share="copy"
+                title="URLをコピー">
+                <i class="bi bi-clipboard" style="font-size: 16px;"></i>
+                <span class="small">URLをコピー</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- テーマ切替 -->
         <div class="position-relative">
           <button type="button" class="btn btn-sm p-1 d-flex justify-content-center align-items-center"

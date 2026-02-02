@@ -8,6 +8,7 @@ import { DEFAULT_SETTINGS, Settings, Theme } from '../settings/settings';
 import { getSettings, setSettings, isEnabled, setEnabled } from '../settings/storage';
 import meta from '../../public/manifest.meta.json';
 import { applyTheme, initThemeMenu } from './theme';
+import { initShareMenu, SharePlatform } from './share';
 
 type ManifestMetadata = {
   issues_url?: string;
@@ -74,6 +75,24 @@ class PopupManager {
     const theme = this.settings.theme || DEFAULT_SETTINGS.theme;
     initThemeMenu(async (value: Theme) => {
       await this.updateSettings({ theme: value }, `テーマを ${value} に変更しました`, 'テーマ設定の保存に失敗しました');
+    });
+
+    // シェアメニューの初期化
+    initShareMenu((platform: SharePlatform, success: boolean) => {
+      const platformNames: Record<SharePlatform, string> = {
+        twitter: 'X (Twitter)',
+        facebook: 'Facebook',
+        copy: 'クリップボード',
+      };
+      if (success) {
+        if (platform === 'copy') {
+          this.showMessage('URLをコピーしました');
+        } else {
+          this.showMessage(`${platformNames[platform]}でシェアしました`);
+        }
+      } else {
+        this.showMessage('シェアに失敗しました');
+      }
     });
 
     // 他の設定項目のイベントリスナー例
