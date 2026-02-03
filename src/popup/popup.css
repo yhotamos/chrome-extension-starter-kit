@@ -7,8 +7,27 @@ html {
 }
 
 @media (min-width: 768px) {
+  html {
+    font-size: 1rem !important;
+  }
+
   .container-md {
     max-width: 720px !important;
+  }
+
+  i {
+    font-size: 130% !important;
+  }
+
+  svg {
+    width: 1.3rem !important;
+    height: 1.3rem !important;
+  }
+
+  .panel-btn {
+    height: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    width: auto !important;
   }
 }
 
@@ -22,14 +41,15 @@ html {
   transition: none !important;
 }
 
-/* 最小限のスタイル: Bootstrap 側の変数/テーマに依存 */
+.panel-btn {
+  width: 20px;
+  height: 20px;
+}
 
-/* ボタン共通 */
 #theme-button,
 #more-button {
   width: 28px;
   height: 28px;
-  /* border: none; */
   background: transparent;
   display: inline-flex;
   align-items: center;
@@ -43,20 +63,19 @@ html {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
-/* メニュー */
 #theme-menu {
   position: absolute;
-  top: 32px;
+  top: 36px;
   right: 0;
   z-index: 2500;
 }
 
-/* その他メニュー */
 #more-menu {
   position: absolute;
-  top: 32px;
+  top: 36px;
   right: 0;
   z-index: 2500;
+  min-width: 160px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -96,7 +115,6 @@ html {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
-/* アクティブ */
 #theme-menu .theme-option.active {
   background-color: var(--bs-primary, #0d6efd);
   color: #fff;
@@ -110,7 +128,6 @@ html {
   stroke: #fff;
 }
 
-/* SVG の stroke を文字色に合わせる（テーマ切替時にアイコン色を追従させる） */
 svg {
   stroke: currentColor;
 }
