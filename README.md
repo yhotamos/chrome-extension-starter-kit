@@ -21,7 +21,7 @@ TypeScript と webpack を使用して Chrome 拡張機能を開発するため�
 
 このリポジトリをテンプレートとして使用して，コミット履歴を含まない新しいプロジェクトを開始できます．
 
-GitHub CLI を使用:
+GitHub CLI を使用する場合:
 
 ```bash
 # テンプレートから新しいリポジトリを作成
@@ -35,7 +35,7 @@ npm install
 npm run watch
 ```
 
-GitHub UI を使用:
+GitHub UI を使用する場合:
 
 1. [このリポジトリ](https://github.com/yhotamos/chrome-extension-starter-kit)にアクセス
 2. 「Use this template」ボタンをクリック
@@ -57,10 +57,12 @@ rm -rf .git
 # 新しいGitリポジトリとして初期化
 git init
 git add .
-git commit -m "Initial commit"
+git commit -m "initial commit"
 
 # 依存関係をインストール
 npm install
+
+# 開発モード
 npm run watch
 ```
 
@@ -76,10 +78,10 @@ cd chrome-extension-starter-kit
 # 依存関係をインストール
 npm install
 
-# 開発モード（ファイル変更を自動監視 + オートリロード）
+# 開発モード
 npm run watch
 
-# または，本番用ビルド
+# または本番用ビルド
 npm run build
 ```
 
@@ -90,99 +92,59 @@ npm run build
 3. 「パッケージ化されていない拡張機能を読み込む」をクリック
 4. `dist/` ディレクトリを選択
 
-## プロジェクト構成
+## 主要ファイルの説明
 
-```
-chrome-extension-starter-kit/
-├── src/
-│   ├── background.ts        # バックグラウンドスクリプト
-│   ├── background.dev.ts    # バックグラウンドスクリプト（開発用）
-│   ├── content.ts           # コンテンツスクリプト
-│   ├── popup.ts             # ポップアップスクリプト
-│   ├── popup/               # ポップアップ関連
-│   │   └── panel.ts
-│   └── utils/               # ユーティリティ関数
-│       ├── date.ts          # 日時関連
-│       ├── dom.ts           # DOM操作関連
-│       ├── permissions.ts   # 権限関連
-│       └── reload-tabs.ts   # タブリロード関連
-├── public/
-│   ├── manifest.dev.json    # 拡張機能マニフェスト（開発用）
-│   ├── manifest.meta.json   # 拡張機能マニフェスト（メタ）
-│   ├── manifest.prod.json   # 拡張機能マニフェスト（本番用）
-│   ├── popup.html           # ポップアップ HTML
-│   ├── popup.css            # ポップアップスタイル
-│   └── icons/               # アイコン画像
-├── scripts/
-│   ├── create-zip.mts       # ビルド成果物をZIP化
-│   ├── ext-reloader.js      # webpack プラグイン（オートリロード用）
-│   ├── publish.mts          # 公開用スクリプト
-│   └── reload.ts            # リロード機能
-├── releases/                # リリース成果物
-├── docs/                    # ドキュメント
-└── dist/                    # ビルド成果物（自動生成）
-```
-
-## 開発ガイド
-
-### マニフェストファイルの管理
+### マニフェストファイル
 
 拡張機能の設定はマニフェストファイルで管理されます．このプロジェクトでは，開発用と本番用の 2 つのマニフェストを使用しています．
 
 - `public/manifest.dev.json`: 開発用マニフェスト（オートリロード機能など開発用設定を含む）
-- `public/manifest.meta.json`: メタ情報用マニフェスト
 - `public/manifest.prod.json`: 本番用マニフェスト（公開時に使用）
+- `public/manifest.meta.json`: メタ情報用マニフェスト
 
 ビルドプロセスに応じて，webpack が自動的に適切なマニフェストを `dist/` にコピーします．
 
-### 各ファイルの役割
+### コアスクリプト
 
-#### コアスクリプト
-
-- `src/background.ts`: バックグラウンドで常駐し，イベント処理や状態管理を行います．例: API 呼び出し，タブ管理，通知の送信など．
 - `src/background.dev.ts`: 開発用バックグラウンドスクリプト（開発時のみ使用）
+- `src/background.ts`: バックグラウンドで常駐し，イベント処理や状態管理を行います．例: API 呼び出し，タブ管理，通知の送信など．
 - `src/content.ts`: Web ページに挿入され，DOM 操作やページとのやり取りを行います．例: ページ内容の解析，要素の追加・変更，スクレイピングなど．
-- `src/popup.ts`: ポップアップ（`popup.html`）に関連する処理を記述します．例: UI イベントハンドラー，ユーザーアクションの処理など．
+- `src/popup/popup.ts`: ポップアップ（`popup.html`）に関連する処理を記述します．例: UI イベントハンドラー，ユーザアクションの処理など．
 
-#### ユーティリティ関数
+### ユーティリティ関数
 
 `src/utils/` 配下に汎用的な関数をまとめています．
 
-| ファイル         | 説明         | 主な関数                                 |
-| ---------------- | ------------ | ---------------------------------------- |
-| `date.ts`        | 日時処理     | `dateTime()` - 日時フォーマット          |
-| `dom.ts`         | DOM 操作     | `clickURL()` - 新しいタブで URL を開く   |
-| `permissions.ts` | 権限管理     | `getSiteAccessText()` - 権限テキスト変換 |
-| `reload-tabs.ts` | タブリロード | タブ関連の処理                           |
-
-使用例:
-
-```typescript
-import { dateTime } from "./utils/date";
-import { clickURL } from "./utils/dom";
-
-const timestamp = dateTime(); // "2024-03-15 14:30"
-clickURL(linkElement); // 新しいタブで開く
-```
-
-新しいユーティリティの追加:
-
-1. `src/utils/` に新しいファイルを作成（例: `api.ts`）
-2. 関数をエクスポート（JSDoc を付けることを推奨）
-3. 必要な場所でインポートして使用
-
-### UI の変更
-
-ポップアップの UI:
-
-- `public/popup.html`: ポップアップの HTML 構造を記述します．
-- `public/popup.css`: ポップアップのスタイルを定義します．
-- UI 開発については [Bootstrap](https://getbootstrap.com/) を利用しています．必要に応じて追加，変更してください．
-
-アイコン:
+### アイコン
 
 - `public/icons/` にアイコンファイルを配置します．
 - 使用サイズを揃え，マニフェストファイルで参照してください．
+
+### ポップアップの UI
+
+ポップアップの HTML 構造は `public/popup.html` に記述します．
+ベースのスタイルは Bootstrap を使用しており，カスタマイズは `src/popup/popup.css` で行います．
+
+初期状態のポップアップ UI は，シンプルなタブ構成を想定しています．
+
+- 設定タブ：
+  機能のオン／オフや基本的な設定を行います．
+
+- ドキュメントタブ：
+  拡張機能の使い方や簡単なヘルプを表示します．
+
+- バージョンタブ：
+  現在の拡張機能のバージョンや更新内容を表示します．
+
+- 情報タブ：
+  作者情報，ライセンス，外部リンクなどを表示します．
+
+#### ポップアップ UI のスクリーンショット
+
+左側はポップアップとして表示されるデフォルトの UI です．
+右側のように，新しいタブとして開いて表示することもできます．
+
+![Popup UI](https://lh3.googleusercontent.com/d/1CFzXMhYtzmNPvMRHAjKg98TMk5bgMfwO)
 
 ## 開発ワークフロー
 
@@ -195,7 +157,6 @@ clickURL(linkElement); // 新しいタブで開く
    ```
 
 2. コードを編集
-
    - `src/` 配下のファイルを編集
    - 保存すると自動でビルドされ，拡張機能が自動リロードされます
 
@@ -205,34 +166,74 @@ clickURL(linkElement); // 新しいタブで開く
 
 ### よくある開発タスク
 
-#### API 通信を追加する
+本スターターキットでは，Chrome 拡張機能開発で頻繁に行われる典型的な作業を簡単に追加・拡張できます．以下は代表的な例です．
+
+#### コンテンツスクリプトで DOM を操作する
+
+コンテンツスクリプトでは，Web ページ上の要素を取得し，内容やスタイルを変更できます．
 
 ```typescript
-// src/utils/api.ts を作成
-export async function fetchData(url: string) {
-  const response = await fetch(url);
-  return response.json();
+// src/content.ts
+const title = document.querySelector("h1");
+if (title) {
+  title.style.outline = "2px solid red";
 }
-
-// background.ts で使用
-import { fetchData } from "./utils/api";
-const data = await fetchData("https://api.example.com/data");
 ```
 
-#### 特定のサイトでコンテンツスクリプトを実行する
+主に次のような用途で使用されます．
 
-1. `src/content.ts` を編集
-2. マニフェストファイル（`public/manifest.dev.json` または `public/manifest.prod.json`）で対象 URL を指定
+- 要素の取得
+- テキストの書き換え
+- スタイルの変更
 
-```json
-{
-  "content_scripts": [
-    {
-      "matches": ["https://example.com/*"],
-      "js": ["content.js"]
-    }
-  ]
-}
+多くの拡張機能で利用される基本的な処理です．
+
+#### ポップアップ UI をカスタマイズする
+
+ポップアップは拡張機能の設定や操作を行う主要な UI です．必要に応じて以下のファイルを編集してください．
+
+1. `public/popup.html` に設定 UI を追加
+2. `src/popup/popup.css` でスタイルを調整
+3. `src/popup/popup.ts` でイベント処理を実装
+
+主に以下のような機能を追加できます．
+
+- ボタンの追加
+- 機能の ON／OFF 切り替え
+- 設定値の表示や更新
+
+#### バックグラウンドスクリプトで処理を実行する
+
+バックグラウンドスクリプトでは，拡張機能全体に関わる処理やタブ・イベントの監視などを行います．
+常駐処理や他スクリプトとの橋渡し役として利用されます．
+
+```typescript
+// src/background.ts
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Extension installed");
+});
+```
+
+主に次のような用途で使用されます．
+
+- 拡張機能の初期化処理
+- タブやブラウザイベントの監視
+- コンテンツスクリプトやポップアップとのメッセージ連携
+
+#### UI 文言・説明文を調整する
+
+ユーザにとって分かりやすい拡張機能にするためには，UI 文言や説明文の調整も重要です．
+
+- ポップアップやオプション画面のラベルを分かりやすくする
+- README の説明を整理する
+- 技術的な表現をユーザ向けに調整する
+
+例：
+
+```text
+設定時にボタンをクリックすることで，
+ユーザが開いているタブの URL を取得し，
+設定を簡単に行えるようにします．
 ```
 
 ## オートリロード機能について
