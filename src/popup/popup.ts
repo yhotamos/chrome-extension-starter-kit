@@ -7,7 +7,7 @@ import { getSiteAccessText } from '../utils/permissions';
 import { DEFAULT_SETTINGS, Settings, Theme } from '../settings/settings';
 import { getSettings, setSettings, isEnabled, setEnabled } from '../settings/storage';
 import meta from '../../public/manifest.meta.json';
-import { applyTheme, initThemeMenu } from './theme';
+import { applyTheme, getTheme, setupThemeMenu } from './theme';
 import { initShareMenu, SharePlatform } from './share';
 
 type ManifestMetadata = {
@@ -18,6 +18,14 @@ type ManifestMetadata = {
   github_url?: string;
   [key: string]: any;
 };
+
+try {
+  // フラッシュ防止のため先にテーマを適用
+  const theme = getTheme();
+  applyTheme(theme);
+} catch (e) {
+  // ignore
+}
 
 class PopupManager {
   private panel: PopupPanel;
@@ -48,14 +56,10 @@ class PopupManager {
       this.enabled = await isEnabled();
       if (this.enabledElement) this.enabledElement.checked = this.enabled;
 
-      const theme = this.settings.theme || DEFAULT_SETTINGS.theme;
-      applyTheme(theme);
-
       this.showMessage(`${this.manifestData.short_name} が起動しました`);
     } catch (err) {
       console.error('loadInitialState error', err);
       this.showMessage('設定の読み込みに失敗しました');
-      applyTheme(DEFAULT_SETTINGS.theme);
     }
   }
 
@@ -72,8 +76,13 @@ class PopupManager {
     });
 
     // テーマ設定のイベントリスナー
-    initThemeMenu(async (value: Theme) => {
-      await this.updateSettings({ theme: value }, `テーマを ${value} に変更しました`, 'テーマ設定の保存に失敗しました');
+    setupThemeMenu((value: Theme) => {
+      try {
+        applyTheme(value);
+        this.showMessage(`テーマを ${value} に変更しました`);
+      } catch (e) {
+        this.showMessage('テーマ設定の保存に失敗しました');
+      }
     });
 
     // シェアメニューの初期化
