@@ -33,9 +33,8 @@ export class PopupPanel {
   }
 
   private initializePanel(): void {
-    this.panel.style.display = 'block';
-    this.panel.style.height = '0';
-    this.closeButton.style.display = 'none';
+    this.panel.style.height = '0px';
+    this.closeButton.classList.add('d-none');
     this.switchMinMaxButtons();
   }
 
@@ -51,22 +50,20 @@ export class PopupPanel {
     const panelHeight = parseFloat(this.panel.style.height);
     const isPanelVisible = panelHeight > 50 && isOpen;
 
-    this.closeButton.style.display = isPanelVisible ? 'block' : 'none';
-    // this.closeButton.children[0].setAttribute('style', `display: ${isPanelVisible ? 'block' : 'none'}`);
-    this.panelButton.style.display = isPanelVisible ? 'none' : 'block';
-    this.panelButton.children[0].setAttribute('style', `display: ${isPanelVisible ? 'none' : 'block'}`);
+    this.closeButton.classList.toggle('d-none', !isPanelVisible);
+    this.panelButton.classList.toggle('d-none', isPanelVisible);
 
     if (isOpen && (this.panel.offsetHeight === this.getPanelHeight())) {
-      this.maximizeButton.style.display = 'none';
-      this.minimizeButton.style.display = 'block';
+      this.maximizeButton.classList.add('d-none');
+      this.minimizeButton.classList.remove('d-none');
     }
   }
 
   private switchMinMaxButtons(): void {
     const panelHeight = parseFloat(this.panel.style.height);
     const isMaximized = panelHeight > this.getPanelHeight() - 20;
-    this.maximizeButton.style.display = isMaximized ? 'none' : 'block';
-    this.minimizeButton.style.display = isMaximized ? 'block' : 'none';
+    this.maximizeButton.classList.toggle('d-none', isMaximized);
+    this.minimizeButton.classList.toggle('d-none', !isMaximized);
   }
 
   private addEventListeners(): void {
@@ -92,6 +89,7 @@ export class PopupPanel {
 
     window.addEventListener('mousemove', (e: MouseEvent) => {
       if (this.isDragging) {
+        document.body.style.userSelect = 'none';
         if (this.header.offsetHeight >= e.clientY - 20) {
           this.panel.style.height = `${this.getPanelHeight()}px`;
           return;
@@ -107,6 +105,7 @@ export class PopupPanel {
     window.addEventListener('mouseup', () => {
       if (this.isDragging) {
         this.isDragging = false;
+        document.body.style.userSelect = '';
         this.panel.classList.remove('no-transition');
         this.resizer.style.backgroundColor = '';
         this.emdHeight = this.panel.offsetHeight;
@@ -158,7 +157,7 @@ export class PopupPanel {
 
   public clearMessage(): void {
     if (this.messageDiv) {
-      this.messageDiv.innerHTML = '<p class="m-0 small"></p>';
+      this.messageDiv.innerHTML = '';
     }
   }
 }
