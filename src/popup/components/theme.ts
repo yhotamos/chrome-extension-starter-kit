@@ -1,4 +1,4 @@
-import { Theme } from '../settings/settings';
+import { Theme } from "popup/types";
 
 /**
  * テーマ取得

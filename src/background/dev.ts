@@ -1,6 +1,6 @@
-import "./background";
-import { reloadTargetTabs } from "./utils/reload-tabs";
-import { reloadExtension } from "../scripts/reload";
+import ".";
+import { reloadTargetTabs } from "../utils/reload-tabs";
+import { reloadExtension } from "../../scripts/reload";
 
 // 開発用のターゲットURLパターン
 const targetUrls = ["https://www.google.com/*"];

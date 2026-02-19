@@ -11,5 +11,5 @@
     "baseUrl": "src",
     "resolveJsonModule": true
   },
-  "include": ["src", "scripts/reload.ts"]
+  "include": ["src", "scripts/reload.ts", "src/background/dev.ts"]
 }

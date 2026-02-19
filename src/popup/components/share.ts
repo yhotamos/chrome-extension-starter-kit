@@ -1,10 +1,4 @@
-export type SharePlatform = 'twitter' | 'facebook' | 'copy';
-
-export interface ShareConfig {
-  title: string;
-  url: string;
-  text?: string;
-}
+import { ShareConfig, SharePlatform } from "popup/types";
 
 /**
  * 各プラットフォームのシェアURLを生成

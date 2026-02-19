@@ -1,6 +1,6 @@
-export type Theme = 'system' | 'light' | 'dark';
-
 export type Settings = {
+  // notifications?: boolean;
+  // fontSize?: number;
   [key: string]: any;
 };
 

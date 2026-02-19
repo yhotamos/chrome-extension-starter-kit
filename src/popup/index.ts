@@ -1,23 +1,15 @@
 import './popup.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { PopupPanel } from '../popup/panel';
+import meta from '../../public/manifest.meta.json';
+import { ManifestMetadata, SharePlatform, Theme } from './types';
+import { PopupPanel } from './components/panel';
 import { dateTime } from '../utils/date';
 import { openLinkNewTab } from '../utils/dom';
 import { getSiteAccessText } from '../utils/permissions';
-import { DEFAULT_SETTINGS, Settings, Theme } from '../settings/settings';
-import { getSettings, setSettings, isEnabled, setEnabled } from '../settings/storage';
-import meta from '../../public/manifest.meta.json';
-import { applyTheme, getTheme, setupThemeMenu } from './theme';
-import { initShareMenu, SharePlatform } from './share';
-
-type ManifestMetadata = {
-  issues_url?: string;
-  languages?: string[];
-  publisher?: string;
-  developer?: string;
-  github_url?: string;
-  [key: string]: any;
-};
+import { DEFAULT_SETTINGS, Settings } from '../settings';
+import { getSettings, setSettings, isEnabled, setEnabled } from '../utils/storage';
+import { applyTheme, getTheme, setupThemeMenu } from './components/theme';
+import { initShareMenu } from './components/share';
 
 try {
   // フラッシュ防止のため先にテーマを適用

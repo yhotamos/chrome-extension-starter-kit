@@ -15,9 +15,9 @@ module.exports = {
   devtool: isDev ? "inline-source-map" : false,
   context: SRC,
   entry: {
-    background: isDev ? path.join(SRC, "background.dev.ts") : path.join(SRC, "background.ts"),
-    content: path.join(SRC, "content.ts"),
-    popup: path.join(SRC, "popup", "popup.ts")
+    background: isDev ? path.join(SRC, "background", "dev.ts") : path.join(SRC, "background", "index.ts"),
+    content: path.join(SRC, "content", "index.ts"),
+    popup: path.join(SRC, "popup", "index.ts")
   },
   output: {
     path: DIST,
