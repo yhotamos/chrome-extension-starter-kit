@@ -17,4 +17,17 @@ export type ManifestMetadata = {
   [key: string]: any;
 };
 
+export interface DocumentMetadata {
+  id: string;
+  title: string;
+  order: number;
+  visible?: boolean;
+  expanded?: boolean;
+  date?: string;
+  lang?: string;
+}
 
+export interface DocItem {
+  metadata: DocumentMetadata;
+  content: string; // HTML
+}
