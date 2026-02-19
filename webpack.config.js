@@ -46,6 +46,15 @@ module.exports = {
         generator: {
           filename: "assets/[name][ext]"
         }
+      },
+      {
+        test: /\.md$/,
+        type: 'javascript/auto',
+        use: [
+          {
+            loader: path.join(ROOT, "scripts", "md-loader.js")
+          }
+        ]
       }
     ]
   },
