@@ -106,10 +106,10 @@ npm run build
 
 ### コアスクリプト
 
-- `src/background.dev.ts`: 開発用バックグラウンドスクリプト（開発時のみ使用）
-- `src/background.ts`: バックグラウンドで常駐し，イベント処理や状態管理を行います．例: API 呼び出し，タブ管理，通知の送信など．
-- `src/content.ts`: Web ページに挿入され，DOM 操作やページとのやり取りを行います．例: ページ内容の解析，要素の追加・変更，スクレイピングなど．
-- `src/popup/popup.ts`: ポップアップ（`popup.html`）に関連する処理を記述します．例: UI イベントハンドラー，ユーザアクションの処理など．
+- `src/background/dev.ts`: 開発用バックグラウンドスクリプト（開発時のみ使用）
+- `src/background/index.ts`: バックグラウンドで常駐し，イベント処理や状態管理を行います．例: API 呼び出し，タブ管理，通知の送信など．
+- `src/content/index.ts`: Web ページに挿入され，DOM 操作やページとのやり取りを行います．例: ページ内容の解析，要素の追加・変更，スクレイピングなど．
+- `src/popup/index.ts`: ポップアップ（`popup.html`）に関連する処理を記述します．例: UI イベントハンドラー，ユーザアクションの処理など．
 
 ### ユーティリティ関数
 
@@ -146,6 +146,59 @@ npm run build
 
 ![Popup UI](https://lh3.googleusercontent.com/d/1CFzXMhYtzmNPvMRHAjKg98TMk5bgMfwO)
 
+### ドキュメント（ポップアップ）機能
+
+ポップアップの「ドキュメント」タブは，`docs/*.md` を読み込んでアコーディオン表示します．
+
+- 読み込み元: `docs/overview.md`, `docs/tutorial.md`
+- 表示処理: `src/popup/components/document.ts`
+- Markdown変換: `scripts/md-loader.js`（Front Matter を解析し，本文を HTML 化）
+
+各 `.md` は先頭に Front Matter を持てます（例）:
+
+```yaml
+---
+id: overview
+title: 概要
+order: 1
+visible: true
+expanded: true
+date: 2026-02-19
+lang: ja
+---
+```
+
+- `order`: 小さい順で表示
+- `visible`: `false` なら非表示
+- `expanded`: 初期表示で開くかどうか
+
+新しいドキュメントを追加する場合は，`.md` を作成したうえで `src/popup/components/document.ts` の `allDocs` に追加してください．
+
+### 公開スクリプト
+
+公開に関する npm スクリプトは以下の2つです．
+
+- `npm run zip`
+  - `scripts/zip.mts` を実行して `dist/` を ZIP 化します．
+  - 出力先：`releases/<package-name>-<version>.zip`
+
+- `npm run publish`
+  - `scripts/publish.mts` を実行して，ZIP を Chrome Web Store にアップロードして公開します．
+  - `.env` に必要な環境変数が設定されている必要があります（後述）．
+  - `EXTENSION_ID` が必要なため，初回は `npm run zip` で作成した ZIP を手動で Chrome Web Store にアップロードし，`EXTENSION_ID` を取得してください．取得後は，2回目以降 `npm run publish` で公開できます．
+
+`npm run publish` を使用するには，`.env` に次の環境変数を設定する必要があります．
+`.env.example` を参考にして `.env` ファイルを作成してください．
+
+```env
+EXTENSION_ID=...
+CLIENT_ID=...
+CLIENT_SECRET=...
+REFRESH_TOKEN=...
+```
+
+これらが不足している場合，スクリプトはエラーで停止します．
+
 ## 開発ワークフロー
 
 ### 日常的な開発サイクル
@@ -173,7 +226,7 @@ npm run build
 コンテンツスクリプトでは，Web ページ上の要素を取得し，内容やスタイルを変更できます．
 
 ```typescript
-// src/content.ts
+// src/content/index.ts
 const title = document.querySelector("h1");
 if (title) {
   title.style.outline = "2px solid red";
@@ -194,7 +247,7 @@ if (title) {
 
 1. `public/popup.html` に設定 UI を追加
 2. `src/popup/popup.css` でスタイルを調整
-3. `src/popup/popup.ts` でイベント処理を実装
+3. `src/popup/index.ts` でイベント処理を実装
 
 主に以下のような機能を追加できます．
 
@@ -208,7 +261,7 @@ if (title) {
 常駐処理や他スクリプトとの橋渡し役として利用されます．
 
 ```typescript
-// src/background.ts
+// src/background/index.ts
 chrome.runtime.onInstalled.addListener(() => {
   console.log("Extension installed");
 });
