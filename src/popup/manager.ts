@@ -1,0 +1,136 @@
+import meta from '../../public/manifest.meta.json';
+import { ManifestMetadata, SharePlatform, Theme } from './types';
+import { PopupPanel } from './components/panel';
+import { dateTime } from '../utils/date';
+import { DEFAULT_SETTINGS, Settings } from '../settings';
+import { getSettings, setSettings, isEnabled, setEnabled } from '../utils/storage';
+import { initShareMenu } from './components/share';
+import { applyTheme, setupThemeMenu } from './components/theme';
+import { setupMoreMenu } from './components/menu';
+import { setupInfoTab } from './components/info';
+
+export class PopupManager {
+  private panel: PopupPanel;
+  private enabled: boolean = false;
+  private settings: Settings = DEFAULT_SETTINGS;
+  private manifestData: chrome.runtime.Manifest;
+  private manifestMetadata: ManifestMetadata;
+  private enabledElement: HTMLInputElement | null;
+  // private notificationToggle: HTMLInputElement | null;
+  // private fontSizeRange: HTMLInputElement | null;
+
+  constructor() {
+    this.panel = new PopupPanel();
+    this.manifestData = chrome.runtime.getManifest();
+    this.manifestMetadata = meta || {};
+    this.enabledElement = document.getElementById('enabled') as HTMLInputElement | null;
+    // this.notificationToggle = document.getElementById('notification-toggle') as HTMLInputElement | null;
+    // this.fontSizeRange = document.getElementById('font-size') as HTMLInputElement | null;
+
+    this.initialize();
+  }
+
+  private async initialize(): Promise<void> {
+    try {
+      this.settings = await getSettings();
+      this.enabled = await isEnabled();
+      if (this.enabledElement) this.enabledElement.checked = this.enabled;
+      this.showMessage(`${this.manifestData.short_name} が起動しました`);
+    } catch (err) {
+      console.error('error', err);
+      this.showMessage('設定の読み込みに失敗しました');
+    }
+
+    this.addEventListeners();
+    this.setupUI();
+  }
+
+  private addEventListeners(): void {
+    this.enabledElement?.addEventListener('change', async (event) => {
+      this.enabled = (event.target as HTMLInputElement).checked;
+      try {
+        await setEnabled(this.enabled);
+        this.showMessage(this.enabled ? `${this.manifestData.short_name} は有効になりました` : `${this.manifestData.short_name} は無効になりました`);
+      } catch (err) {
+        console.error('failed to save enabled state', err);
+        this.showMessage('有効状態の保存に失敗しました');
+      }
+    });
+
+    // テーマ設定のイベントリスナー
+    setupThemeMenu((value: Theme) => {
+      try {
+        applyTheme(value);
+        this.showMessage(`テーマを ${value} に変更しました`);
+      } catch (e) {
+        this.showMessage('テーマ設定の保存に失敗しました');
+      }
+    });
+
+    // シェアメニューの初期化
+    initShareMenu((platform: SharePlatform, success: boolean) => {
+      const platformNames: Record<SharePlatform, string> = {
+        twitter: 'X (Twitter)',
+        facebook: 'Facebook',
+        copy: 'クリップボード',
+      };
+      if (success) {
+        if (platform === 'copy') {
+          this.showMessage('URLをコピーしました');
+        } else {
+          this.showMessage(`${platformNames[platform]}でシェアしました`);
+        }
+      } else {
+        this.showMessage('シェアに失敗しました');
+      }
+    });
+
+    // 他の設定項目のイベントリスナー例
+
+    // チェックボックスの例:
+    // this.notificationToggle?.addEventListener('change', (event) => {
+    //   const checked = (event.target as HTMLInputElement).checked;
+    //   this.updateSettings({ notifications: checked }, `通知を${checked ? '有効' : '無効'}にしました`, '通知の保存に失敗しました');
+    // });
+
+    // スライダーの例:
+    // this.fontSizeRange?.addEventListener('change', (event) => {
+    //   const fontSize = (event.target as HTMLInputElement).value;
+    //   this.updateSettings({ fontSize: Number(fontSize) }, 'フォントサイズを保存しました', 'フォントサイズの保存に失敗しました');
+    // });
+  }
+
+  private async updateSettings(patch: Partial<Settings>, successMessage?: string, failedMessage?: string): Promise<void> {
+    try {
+      this.settings = { ...this.settings, ...patch };
+      await setSettings(this.settings);
+      if (successMessage) this.showMessage(successMessage);
+    } catch (err) {
+      console.error('failed to save settings', err);
+      this.showMessage(failedMessage || '設定の保存に失敗しました');
+    }
+  }
+
+  private setupUI(): void {
+    const short_name = this.manifestData.short_name || this.manifestData.name;
+    const title = document.getElementById('title');
+    if (title) {
+      title.textContent = short_name;
+    }
+    const titleHeader = document.getElementById('title-header');
+    if (titleHeader) {
+      titleHeader.textContent = short_name;
+    }
+    const enabledLabel = document.getElementById('enabled-label');
+    if (enabledLabel) {
+      enabledLabel.textContent = `${short_name} を有効にする`;
+    }
+
+    setupMoreMenu();
+    setupInfoTab(this.manifestMetadata);
+  }
+
+  private showMessage(message: string, timestamp: string = dateTime()) {
+    this.panel.messageOutput(message, timestamp);
+  }
+}
