@@ -8,6 +8,7 @@ import { initShareMenu } from './components/share';
 import { applyTheme, setupThemeMenu } from './components/theme';
 import { setupMoreMenu } from './components/menu';
 import { setupInfoTab } from './components/info';
+import { setupDocumentTab } from './components/document';
 
 export class PopupManager {
   private panel: PopupPanel;
@@ -128,6 +129,7 @@ export class PopupManager {
 
     setupMoreMenu();
     setupInfoTab(this.manifestMetadata);
+    setupDocumentTab();
   }
 
   private showMessage(message: string, timestamp: string = dateTime()) {
