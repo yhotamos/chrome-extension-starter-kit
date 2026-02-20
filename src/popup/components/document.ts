@@ -1,6 +1,7 @@
 import { DocItem } from '../types';
 import overviewDoc from '../../../docs/overview.md';
 import tutorialDoc from '../../../docs/tutorial.md';
+import { escapeHtml } from '../../utils/html';
 
 const MARKDOWN_CLASS_MAP: Record<string, string> = {
   h1: 'md-h1 fs-5',
@@ -41,6 +42,8 @@ export function setupDocumentTab(): void {
 function createAccordionHTML(docs: DocItem[]): string {
   const items = docs.map(doc => {
     const { id, title, expanded } = doc.metadata;
+    const safeId = escapeHtml(String(id));
+    const safeTitle = escapeHtml(String(title));
     const collapseClass = expanded ? 'show' : '';
     const buttonClass = expanded ? '' : 'collapsed';
     const ariaExpanded = expanded ? 'true' : 'false';
@@ -50,11 +53,11 @@ function createAccordionHTML(docs: DocItem[]): string {
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button ${buttonClass}" type="button" data-bs-toggle="collapse" 
-            data-bs-target="#doc-${id}" aria-expanded="${ariaExpanded}" aria-controls="doc-${id}">
-            ${title}
+            data-bs-target="#doc-${safeId}" aria-expanded="${ariaExpanded}" aria-controls="doc-${safeId}">
+            ${safeTitle}
           </button>
         </h2>
-        <div id="doc-${id}" class="accordion-collapse collapse ${collapseClass}" data-bs-parent="#accordion">
+        <div id="doc-${safeId}" class="accordion-collapse collapse ${collapseClass}" data-bs-parent="#accordion">
           <div class="accordion-body p-3">
             ${styledContent}
           </div>
