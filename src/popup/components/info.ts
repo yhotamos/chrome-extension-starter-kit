@@ -1,5 +1,6 @@
 import { ManifestMetadata } from "../types";
 import { openLinkNewTab } from "../../utils/dom";
+import { escapeHtml } from "../../utils/html";
 
 /**
  * 拡張機能の情報タブをセットアップする
@@ -89,7 +90,7 @@ export function getSiteAccessText(origins: string[] | undefined): string {
     if (origins.includes("<all_urls>")) {
       return "すべてのサイト";
     } else {
-      return origins.join("<br>");
+      return origins.map(escapeHtml).join("<br>");
     }
   } else {
     return "クリックされた場合のみ";

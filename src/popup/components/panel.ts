@@ -151,7 +151,10 @@ export class PopupPanel {
 
   public messageOutput(message: string, datetime: string): void {
     if (this.messageDiv) {
-      this.messageDiv.innerHTML += `<p class="m-0 small">[${datetime}] ${message}</p>`;
+      const p = document.createElement('p');
+      p.className = 'm-0 small';
+      p.textContent = `[${datetime}] ${message}`;
+      this.messageDiv.appendChild(p);
     }
   }
 

@@ -5,7 +5,9 @@ function isTargetTab(tabUrl: string | undefined, targetUrls: string[]): boolean 
   if (!tabUrl) return false;
   return targetUrls.some(pattern => {
     try {
-      return new RegExp(pattern.replace(/\*/g, '.*')).test(tabUrl);
+      // まず正規表現のメタ文字をエスケープしてから * をワイルドカードに変換する
+      const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
+      return new RegExp(escaped).test(tabUrl);
     } catch (error) {
       console.warn(`無効なURLパターン: ${pattern}`, error);
       return false;
