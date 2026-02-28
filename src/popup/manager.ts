@@ -141,7 +141,7 @@ export class PopupManager {
     }
 
     setupMoreMenu();
-    setupInfoTab(this.manifestMetadata);
+    setupInfoTab(this.manifestData, this.manifestMetadata);
     setupDocumentTab();
   }
 

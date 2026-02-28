@@ -4,9 +4,8 @@ import { escapeHtml } from "../../utils/html";
 
 /**
  * 拡張機能の情報タブをセットアップする
- * @param manifestMetadata - マニフェストから取得した拡張機能のメタデータ
  */
-export function setupInfoTab(manifestMetadata: ManifestMetadata): void {
+export function setupInfoTab(manifestData: chrome.runtime.Manifest, manifestMetadata: ManifestMetadata): void {
   const storeLink = document.getElementById('store-link') as HTMLAnchorElement;
   if (storeLink) {
     storeLink.href = `https://chrome.google.com/webstore/detail/${chrome.runtime.id}`;
@@ -30,13 +29,13 @@ export function setupInfoTab(manifestMetadata: ManifestMetadata): void {
   if (extensionId) extensionId.textContent = chrome.runtime.id;
 
   const extensionName = document.getElementById('extension-name');
-  if (extensionName) extensionName.textContent = manifestMetadata.name;
+  if (extensionName) extensionName.textContent = manifestData.name;
 
   const extensionVersion = document.getElementById('extension-version');
-  if (extensionVersion) extensionVersion.textContent = manifestMetadata.version;
+  if (extensionVersion) extensionVersion.textContent = manifestData.version;
 
   const extensionDescription = document.getElementById('extension-description');
-  if (extensionDescription) extensionDescription.textContent = manifestMetadata.description ?? '';
+  if (extensionDescription) extensionDescription.textContent = manifestData.description ?? '';
 
   chrome.permissions.getAll((result) => {
     const permissionInfo = document.getElementById('permission-info');
@@ -78,12 +77,6 @@ export function setupInfoTab(manifestMetadata: ManifestMetadata): void {
 
 /**
  * 拡張機能のサイトアクセス権限を日本語テキストに変換する
- * @param origins - 権限が付与されているオリジンの配列
- * @returns サイトアクセス権限を表す日本語テキスト
- * @example
- * getSiteAccessText(['<all_urls>']); // "すべてのサイト"
- * getSiteAccessText(['https://example.com/*']); // "https://example.com/*"
- * getSiteAccessText(undefined); // "クリックされた場合のみ"
  */
 export function getSiteAccessText(origins: string[] | undefined): string {
   if (origins && origins.length > 0) {
