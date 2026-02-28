@@ -7,9 +7,9 @@ const LEVEL_CLASS: Record<LogLevel, string> = {
 };
 
 const SOURCE_LABEL: Record<string, string> = {
-  popup: 'Popup',
+  popup: 'P',
   background: 'BG',
-  content: 'Content',
+  content: 'C',
 };
 
 export class PopupPanel {
@@ -68,6 +68,10 @@ export class PopupPanel {
 
     this.closeButton.classList.toggle('d-none', !isPanelVisible);
     this.panelButton.classList.toggle('d-none', isPanelVisible);
+
+    if (isOpen) {
+      this.messageDiv.scrollTop = this.messageDiv.scrollHeight;
+    }
 
     if (isOpen && (this.panel.offsetHeight === this.getPanelHeight())) {
       this.maximizeButton.classList.add('d-none');
@@ -180,18 +184,17 @@ export class PopupPanel {
     if (this.messageDiv) {
       const p = document.createElement('p');
       const levelClass = LEVEL_CLASS[level] ?? 'text-body';
-      p.className = `m-0 small ${levelClass}`;
+      p.className = `m-0 small ${levelClass} d-flex align-items-start gap-1`;
 
       const sourceLabel = SOURCE_LABEL[source] ?? source;
       const meta = document.createElement('span');
-      meta.className = 'opacity-50';
-      meta.textContent = `[${datetime}][${sourceLabel}] `;
+      meta.className = 'flex-shrink-0 opacity-50';
+      const short = datetime.includes(' ') ? datetime.slice(5) : datetime;
+      meta.textContent = `[${short}][${sourceLabel}]`;
 
-      const text = document.createElement('span');
-      text.textContent = message;
-
-      p.appendChild(meta);
-      p.appendChild(text);
+      const body = document.createElement('span');
+      body.className = 'text-break flex-grow-1';
+      body.textContent = message;
 
       if (level === 'error' && issuesUrl) {
         const sep = document.createElement('span');
@@ -202,9 +205,12 @@ export class PopupPanel {
         link.rel = 'noopener noreferrer';
         link.textContent = '問題を報告する';
         link.className = 'text-danger';
-        p.appendChild(sep);
-        p.appendChild(link);
+        body.appendChild(sep);
+        body.appendChild(link);
       }
+
+      p.appendChild(meta);
+      p.appendChild(body);
 
       this.messageDiv.appendChild(p);
       this.messageDiv.scrollTop = this.messageDiv.scrollHeight;
@@ -217,6 +223,7 @@ export class PopupPanel {
       if (entry.hidden) continue;
       this.messageOutput(entry.message, entry.timestamp, entry.level, entry.source, issuesUrl);
     }
+    this.messageDiv.scrollTop = this.messageDiv.scrollHeight;
   }
 
   public clearMessage(): void {
