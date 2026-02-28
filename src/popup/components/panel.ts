@@ -1,3 +1,17 @@
+import { LogEntry, LogLevel } from '../../utils/logger';
+
+const LEVEL_CLASS: Record<LogLevel, string> = {
+  info: 'text-body',
+  warn: 'text-warning',
+  error: 'text-danger',
+};
+
+const SOURCE_LABEL: Record<string, string> = {
+  popup: 'Popup',
+  background: 'BG',
+  content: 'Content',
+};
+
 export class PopupPanel {
   private header: HTMLElement;
   private tabMenu: HTMLElement;
@@ -9,6 +23,8 @@ export class PopupPanel {
   private panel: HTMLElement;
   private messageDiv: HTMLElement;
   private clearButton: HTMLButtonElement;
+
+  private onClearCallback: (() => void) | null = null;
 
   private startY: number = 0;
   private tmpPanelHeight: number = 0;
@@ -146,15 +162,60 @@ export class PopupPanel {
 
     this.clearButton.addEventListener('click', () => {
       this.clearMessage();
+      this.onClearCallback?.();
     });
   }
 
-  public messageOutput(message: string, datetime: string): void {
+  public setClearCallback(callback: () => void): void {
+    this.onClearCallback = callback;
+  }
+
+  public messageOutput(
+    message: string,
+    datetime: string,
+    level: LogLevel = 'info',
+    source: string = 'popup',
+    issuesUrl?: string,
+  ): void {
     if (this.messageDiv) {
       const p = document.createElement('p');
-      p.className = 'm-0 small';
-      p.textContent = `[${datetime}] ${message}`;
+      const levelClass = LEVEL_CLASS[level] ?? 'text-body';
+      p.className = `m-0 small ${levelClass}`;
+
+      const sourceLabel = SOURCE_LABEL[source] ?? source;
+      const meta = document.createElement('span');
+      meta.className = 'opacity-50';
+      meta.textContent = `[${datetime}][${sourceLabel}] `;
+
+      const text = document.createElement('span');
+      text.textContent = message;
+
+      p.appendChild(meta);
+      p.appendChild(text);
+
+      if (level === 'error' && issuesUrl) {
+        const sep = document.createElement('span');
+        sep.textContent = ' — ';
+        const link = document.createElement('a');
+        link.href = issuesUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = '問題を報告する';
+        link.className = 'text-danger';
+        p.appendChild(sep);
+        p.appendChild(link);
+      }
+
       this.messageDiv.appendChild(p);
+      this.messageDiv.scrollTop = this.messageDiv.scrollHeight;
+    }
+  }
+
+  public loadLogs(entries: LogEntry[], issuesUrl?: string): void {
+    this.clearMessage();
+    for (const entry of entries) {
+      if (entry.hidden) continue;
+      this.messageOutput(entry.message, entry.timestamp, entry.level, entry.source, issuesUrl);
     }
   }
 
