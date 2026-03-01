@@ -1,9 +1,9 @@
 import meta from '../../public/manifest.meta.json';
 import { ManifestMetadata, SharePlatform, Theme } from './types';
 import { PopupPanel } from './components/panel';
-import { dateTime } from '../utils/date';
 import { DEFAULT_SETTINGS, Settings } from '../settings';
 import { getSettings, setSettings, isEnabled, setEnabled } from '../utils/storage';
+import { addLog, clearLogs, getLogs, LOG_STORAGE_KEY, LogEntry, LogLevel } from '../utils/logger';
 import { initShareMenu } from './components/share';
 import { applyTheme, setupThemeMenu } from './components/theme';
 import { setupMoreMenu } from './components/menu';
@@ -32,18 +32,47 @@ export class PopupManager {
   }
 
   private async initialize(): Promise<void> {
+    this.panel.setClearCallback(async () => {
+      await clearLogs();
+    });
+
+    try {
+      const logs = await getLogs();
+      const visibleCount = logs.filter(e => !e.hidden).length;
+      if (logs.length > 0) {
+        this.panel.loadLogs(logs, this.manifestMetadata.issues_url);
+      }
+      this.watchStorageLogs(visibleCount);
+    } catch (err) {
+      console.error('ログ読み込みエラー', err);
+      this.watchStorageLogs(0);
+    }
+
     try {
       this.settings = await getSettings();
       this.enabled = await isEnabled();
       if (this.enabledElement) this.enabledElement.checked = this.enabled;
-      this.showMessage(`${this.manifestData.short_name} が起動しました`);
+      await this.showLog(`${this.manifestData.short_name} は現在 ${this.enabled ? '有効' : '無効'} です`);
     } catch (err) {
       console.error('error', err);
-      this.showMessage('設定の読み込みに失敗しました');
+      await this.showLog('設定の読み込みに失敗しました', 'error', err);
     }
 
     this.addEventListeners();
     this.setupUI();
+  }
+
+  private watchStorageLogs(knownLength: number): void {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area == 'local' || changes[LOG_STORAGE_KEY]) {
+        const entries: LogEntry[] = changes[LOG_STORAGE_KEY].newValue ?? [];
+        const visible = entries.filter(e => !e.hidden);
+        const newEntries = visible.slice(knownLength);
+        for (const entry of newEntries) {
+          this.panel.messageOutput(entry.message, entry.timestamp, entry.level, entry.source, this.manifestMetadata.issues_url);
+        }
+      }
+    });
   }
 
   private addEventListeners(): void {
@@ -51,25 +80,25 @@ export class PopupManager {
       this.enabled = (event.target as HTMLInputElement).checked;
       try {
         await setEnabled(this.enabled);
-        this.showMessage(this.enabled ? `${this.manifestData.short_name} は有効になりました` : `${this.manifestData.short_name} は無効になりました`);
+        await this.showLog(this.enabled ? `${this.manifestData.short_name} は有効になりました` : `${this.manifestData.short_name} は無効になりました`);
       } catch (err) {
         console.error('failed to save enabled state', err);
-        this.showMessage('有効状態の保存に失敗しました');
+        await this.showLog('有効状態の保存に失敗しました', 'error', err);
       }
     });
 
     // テーマ設定のイベントリスナー
-    setupThemeMenu((value: Theme) => {
+    setupThemeMenu(async (value: Theme) => {
       try {
         applyTheme(value);
-        this.showMessage(`テーマを ${value} に変更しました`);
+        await this.showLog(`テーマを ${value} に変更しました`);
       } catch (e) {
-        this.showMessage('テーマ設定の保存に失敗しました');
+        await this.showLog('テーマ設定の保存に失敗しました', 'error', e);
       }
     });
 
     // シェアメニューの初期化
-    initShareMenu((platform: SharePlatform, success: boolean) => {
+    initShareMenu(async (platform: SharePlatform, success: boolean) => {
       const platformNames: Record<SharePlatform, string> = {
         twitter: 'X (Twitter)',
         facebook: 'Facebook',
@@ -77,12 +106,12 @@ export class PopupManager {
       };
       if (success) {
         if (platform === 'copy') {
-          this.showMessage('URLをコピーしました');
+          await this.showLog('URLをコピーしました');
         } else {
-          this.showMessage(`${platformNames[platform]}でシェアしました`);
+          await this.showLog(`${platformNames[platform]}でシェアしました`);
         }
       } else {
-        this.showMessage('シェアに失敗しました');
+        await this.showLog('シェアに失敗しました', 'error');
       }
     });
 
@@ -105,10 +134,10 @@ export class PopupManager {
     try {
       this.settings = { ...this.settings, ...patch };
       await setSettings(this.settings);
-      if (successMessage) this.showMessage(successMessage);
+      if (successMessage) await this.showLog(successMessage);
     } catch (err) {
       console.error('failed to save settings', err);
-      this.showMessage(failedMessage || '設定の保存に失敗しました');
+      await this.showLog(failedMessage || '設定の保存に失敗しました', 'error', err);
     }
   }
 
@@ -128,11 +157,16 @@ export class PopupManager {
     }
 
     setupMoreMenu();
-    setupInfoTab(this.manifestMetadata);
+    setupInfoTab(this.manifestData, this.manifestMetadata);
     setupDocumentTab();
   }
 
-  private showMessage(message: string, timestamp: string = dateTime()) {
-    this.panel.messageOutput(message, timestamp);
+  private async showLog(message: string, level: LogLevel = 'info', error?: unknown): Promise<void> {
+    const detail = error instanceof Error ? error.message : error ? String(error) : undefined;
+    try {
+      await addLog(message, level, 'popup', detail);
+    } catch (e) {
+      console.error('ログ保存エラー', e);
+    }
   }
 }

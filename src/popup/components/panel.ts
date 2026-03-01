@@ -1,3 +1,17 @@
+import { LogEntry, LogLevel } from '../../utils/logger';
+
+const LEVEL_CLASS: Record<LogLevel, string> = {
+  info: 'text-body',
+  warn: 'text-warning',
+  error: 'text-danger',
+};
+
+const SOURCE_LABEL: Record<string, string> = {
+  popup: 'P',
+  background: 'BG',
+  content: 'C',
+};
+
 export class PopupPanel {
   private header: HTMLElement;
   private tabMenu: HTMLElement;
@@ -8,7 +22,10 @@ export class PopupPanel {
   private resizer: HTMLElement;
   private panel: HTMLElement;
   private messageDiv: HTMLElement;
+  private messageScrollDiv: HTMLElement;
   private clearButton: HTMLButtonElement;
+
+  private onClearCallback: (() => void) | null = null;
 
   private startY: number = 0;
   private tmpPanelHeight: number = 0;
@@ -26,6 +43,7 @@ export class PopupPanel {
     this.resizer = document.getElementById('resizer')!;
     this.panel = document.getElementById('panel')!;
     this.messageDiv = document.getElementById('message')!;
+    this.messageScrollDiv = document.getElementById('messagePanel')!;
     this.clearButton = document.querySelector('#clear-button')!;
 
     this.initializePanel();
@@ -146,16 +164,64 @@ export class PopupPanel {
 
     this.clearButton.addEventListener('click', () => {
       this.clearMessage();
+      this.onClearCallback?.();
     });
   }
 
-  public messageOutput(message: string, datetime: string): void {
+  public setClearCallback(callback: () => void): void {
+    this.onClearCallback = callback;
+  }
+
+  public messageOutput(
+    message: string,
+    datetime: string,
+    level: LogLevel = 'info',
+    source: string = 'popup',
+    issuesUrl?: string,
+  ): void {
     if (this.messageDiv) {
       const p = document.createElement('p');
-      p.className = 'm-0 small';
-      p.textContent = `[${datetime}] ${message}`;
+      const levelClass = LEVEL_CLASS[level] ?? 'text-body';
+      p.className = `m-0 small ${levelClass} d-flex align-items-start gap-1`;
+
+      const sourceLabel = SOURCE_LABEL[source] ?? source;
+      const meta = document.createElement('span');
+      meta.className = 'flex-shrink-0 opacity-50';
+      const short = datetime.includes(' ') ? datetime.slice(5) : datetime;
+      meta.textContent = `[${short}][${sourceLabel}]`;
+
+      const body = document.createElement('span');
+      body.className = 'text-break flex-grow-1';
+      body.textContent = message;
+
+      if (level === 'error' && issuesUrl) {
+        const sep = document.createElement('span');
+        sep.textContent = ' — ';
+        const link = document.createElement('a');
+        link.href = issuesUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = '問題を報告する';
+        link.className = 'text-danger';
+        body.appendChild(sep);
+        body.appendChild(link);
+      }
+
+      p.appendChild(meta);
+      p.appendChild(body);
+
       this.messageDiv.appendChild(p);
+      this.messageScrollDiv.scrollTop = this.messageScrollDiv.scrollHeight;
     }
+  }
+
+  public loadLogs(entries: LogEntry[], issuesUrl?: string): void {
+    this.clearMessage();
+    for (const entry of entries) {
+      if (entry.hidden) continue;
+      this.messageOutput(entry.message, entry.timestamp, entry.level, entry.source, issuesUrl);
+    }
+    this.messageScrollDiv.scrollTop = this.messageScrollDiv.scrollHeight;
   }
 
   public clearMessage(): void {
@@ -164,4 +230,3 @@ export class PopupPanel {
     }
   }
 }
-
