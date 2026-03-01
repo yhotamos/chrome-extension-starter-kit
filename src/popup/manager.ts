@@ -9,6 +9,7 @@ import { applyTheme, setupThemeMenu } from './components/theme';
 import { setupMoreMenu } from './components/menu';
 import { setupInfoTab } from './components/info';
 import { setupDocumentTab } from './components/document';
+import { setupVersionTab } from './components/version';
 
 export class PopupManager {
   private panel: PopupPanel;
@@ -159,6 +160,7 @@ export class PopupManager {
     setupMoreMenu();
     setupInfoTab(this.manifestData, this.manifestMetadata);
     setupDocumentTab();
+    setupVersionTab(this.manifestData.version);
   }
 
   private async showLog(message: string, level: LogLevel = 'info', error?: unknown): Promise<void> {
