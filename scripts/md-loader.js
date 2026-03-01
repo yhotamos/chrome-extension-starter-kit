@@ -1,5 +1,6 @@
 const matter = require('gray-matter');
 const { marked } = require('marked');
+const sanitizeHtml = require('sanitize-html');
 
 function toDocumentMeta(data) {
   const metadata = {
@@ -22,21 +23,44 @@ module.exports = function (source) {
   const callback = this.async();
 
   try {
-    // Front Matter と本文を分離
     const { data, content } = matter(source);
 
-    // 本文を Markdown -> HTML に変換
     const html = marked.parse(content, { async: false });
 
-    // 出力オブジェクトを作成
+    const sanitizedHtml = sanitizeHtml(html, {
+      allowedTags: [
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'p', 'br', 'hr',
+        'ul', 'ol', 'li',
+        'strong', 'em', 'code', 'pre', 'blockquote',
+        'a', 'img',
+      ],
+      allowedAttributes: {
+        a: ['href', 'title', 'target', 'rel'],
+        img: ['src', 'alt', 'title', 'width', 'height'],
+      },
+      allowedSchemes: ['http', 'https', 'mailto'],
+      allowedSchemesAppliedToAttributes: ['href', 'src'],
+      allowProtocolRelative: false,
+      transformTags: {
+        a: (tagName, attribs) => ({
+          tagName,
+          attribs: {
+            ...attribs,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+          },
+        }),
+      },
+    });
+
     const document = {
       metadata: {
         ...toDocumentMeta(data),
       },
-      content: html,
+      content: sanitizedHtml,
     };
 
-    // ES Module として返す
     const code = `export default ${JSON.stringify(document, null, 2)};`;
 
     callback(null, code);
