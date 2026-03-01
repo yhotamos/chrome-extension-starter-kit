@@ -22,6 +22,7 @@ export class PopupPanel {
   private resizer: HTMLElement;
   private panel: HTMLElement;
   private messageDiv: HTMLElement;
+  private messageScrollDiv: HTMLElement;
   private clearButton: HTMLButtonElement;
 
   private onClearCallback: (() => void) | null = null;
@@ -42,6 +43,7 @@ export class PopupPanel {
     this.resizer = document.getElementById('resizer')!;
     this.panel = document.getElementById('panel')!;
     this.messageDiv = document.getElementById('message')!;
+    this.messageScrollDiv = document.getElementById('messagePanel')!;
     this.clearButton = document.querySelector('#clear-button')!;
 
     this.initializePanel();
@@ -68,10 +70,6 @@ export class PopupPanel {
 
     this.closeButton.classList.toggle('d-none', !isPanelVisible);
     this.panelButton.classList.toggle('d-none', isPanelVisible);
-
-    if (isOpen) {
-      this.messageDiv.scrollTop = this.messageDiv.scrollHeight;
-    }
 
     if (isOpen && (this.panel.offsetHeight === this.getPanelHeight())) {
       this.maximizeButton.classList.add('d-none');
@@ -213,7 +211,7 @@ export class PopupPanel {
       p.appendChild(body);
 
       this.messageDiv.appendChild(p);
-      this.messageDiv.scrollTop = this.messageDiv.scrollHeight;
+      this.messageScrollDiv.scrollTop = this.messageScrollDiv.scrollHeight;
     }
   }
 
@@ -223,7 +221,7 @@ export class PopupPanel {
       if (entry.hidden) continue;
       this.messageOutput(entry.message, entry.timestamp, entry.level, entry.source, issuesUrl);
     }
-    this.messageDiv.scrollTop = this.messageDiv.scrollHeight;
+    this.messageScrollDiv.scrollTop = this.messageScrollDiv.scrollHeight;
   }
 
   public clearMessage(): void {
@@ -232,4 +230,3 @@ export class PopupPanel {
     }
   }
 }
-

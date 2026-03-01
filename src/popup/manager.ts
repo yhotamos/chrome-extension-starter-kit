@@ -3,7 +3,7 @@ import { ManifestMetadata, SharePlatform, Theme } from './types';
 import { PopupPanel } from './components/panel';
 import { DEFAULT_SETTINGS, Settings } from '../settings';
 import { getSettings, setSettings, isEnabled, setEnabled } from '../utils/storage';
-import { addLog, clearLogs, getLogs, LogLevel, now } from '../utils/logger';
+import { addLog, clearLogs, getLogs, LOG_STORAGE_KEY, LogEntry, LogLevel } from '../utils/logger';
 import { initShareMenu } from './components/share';
 import { applyTheme, setupThemeMenu } from './components/theme';
 import { setupMoreMenu } from './components/menu';
@@ -38,11 +38,14 @@ export class PopupManager {
 
     try {
       const logs = await getLogs();
+      const visibleCount = logs.filter(e => !e.hidden).length;
       if (logs.length > 0) {
         this.panel.loadLogs(logs, this.manifestMetadata.issues_url);
       }
+      this.watchStorageLogs(visibleCount);
     } catch (err) {
       console.error('ログ読み込みエラー', err);
+      this.watchStorageLogs(0);
     }
 
     try {
@@ -57,6 +60,19 @@ export class PopupManager {
 
     this.addEventListeners();
     this.setupUI();
+  }
+
+  private watchStorageLogs(knownLength: number): void {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area == 'local' || changes[LOG_STORAGE_KEY]) {
+        const entries: LogEntry[] = changes[LOG_STORAGE_KEY].newValue ?? [];
+        const visible = entries.filter(e => !e.hidden);
+        const newEntries = visible.slice(knownLength);
+        for (const entry of newEntries) {
+          this.panel.messageOutput(entry.message, entry.timestamp, entry.level, entry.source, this.manifestMetadata.issues_url);
+        }
+      }
+    });
   }
 
   private addEventListeners(): void {
@@ -145,14 +161,12 @@ export class PopupManager {
     setupDocumentTab();
   }
 
-  private async showLog(message: string, level: LogLevel = 'info', error?: unknown,): Promise<void> {
-    const timestamp = now();
+  private async showLog(message: string, level: LogLevel = 'info', error?: unknown): Promise<void> {
     const detail = error instanceof Error ? error.message : error ? String(error) : undefined;
     try {
       await addLog(message, level, 'popup', detail);
     } catch (e) {
       console.error('ログ保存エラー', e);
     }
-    this.panel.messageOutput(message, timestamp, level, 'popup', this.manifestMetadata.issues_url);
   }
 }

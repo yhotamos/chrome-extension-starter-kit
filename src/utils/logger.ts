@@ -10,7 +10,7 @@ export interface LogEntry {
   hidden?: boolean;
 }
 
-const LOG_STORAGE_KEY = 'app_logs';
+export const LOG_STORAGE_KEY = 'app_logs';
 const MAX_LOG_SIZE = 200;
 
 /**
