@@ -1,6 +1,20 @@
 import { ManifestMetadata } from "../types";
 import { openLinkNewTab } from "../../utils/dom";
 import { escapeHtml } from "../../utils/html";
+import privacyPolicyDoc from '../../../docs/policies/privacy-policy.md';
+
+const PRIVACY_CLASS_MAP: Record<string, string> = {
+  h1: 'fs-6 mb-2',
+  h2: 'fs-6 mb-2',
+  h3: 'fs-6 mb-2',
+  h4: 'fs-6 mb-2',
+  h5: 'fs-6 mb-2',
+  h6: 'fs-6 mb-2',
+  p: 'mb-2',
+  ul: 'ps-4 mb-2',
+  ol: 'ps-4 mb-2',
+  li: 'mb-1',
+};
 
 /**
  * 拡張機能の情報タブをセットアップする
@@ -73,6 +87,24 @@ export function setupInfoTab(manifestData: chrome.runtime.Manifest, manifestMeta
     githubLink.textContent = githubHref;
     openLinkNewTab(githubLink);
   }
+
+  const privacyPolicyContent = document.getElementById('privacy-policy-content');
+  if (privacyPolicyContent) {
+    renderPrivacyPolicy(privacyPolicyContent, privacyPolicyDoc.content);
+  }
+}
+
+function renderPrivacyPolicy(container: HTMLElement, html: string): void {
+  const template = document.createElement("template");
+  template.innerHTML = html;
+
+  Object.entries(PRIVACY_CLASS_MAP).forEach(([tag, className]) => {
+    template.content.querySelectorAll(tag).forEach((element) => {
+      element.classList.add(...className.split(" "));
+    });
+  });
+
+  container.replaceChildren(template.content);
 }
 
 /**
