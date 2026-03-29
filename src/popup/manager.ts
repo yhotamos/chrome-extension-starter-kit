@@ -64,14 +64,16 @@ export class PopupManager {
   }
 
   private watchStorageLogs(knownLength: number): void {
+    let currentLength = knownLength;
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area == 'local' || changes[LOG_STORAGE_KEY]) {
+      if (area === 'local' && changes[LOG_STORAGE_KEY]) {
         const entries: LogEntry[] = changes[LOG_STORAGE_KEY]?.newValue || [];
         const visible = entries.filter(e => !e.hidden);
-        const newEntries = visible.slice(knownLength);
+        const newEntries = visible.slice(currentLength);
         for (const entry of newEntries) {
           this.panel.messageOutput(entry.message, entry.timestamp, entry.level, entry.source, this.manifestMetadata.issues_url);
         }
+        currentLength = visible.length;
       }
     });
   }
