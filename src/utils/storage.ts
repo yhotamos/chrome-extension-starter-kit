@@ -1,4 +1,4 @@
-import { Settings, DEFAULT_SETTINGS } from "../settings";
+import { type Settings, DEFAULT_SETTINGS } from "../settings";
 
 export async function getSettings(): Promise<Settings> {
   const data = await getStorage<{ settings?: Settings }>("settings");

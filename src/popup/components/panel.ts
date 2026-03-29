@@ -1,4 +1,4 @@
-import { LogEntry, LogLevel } from "../../utils/logger";
+import type { LogEntry, LogLevel } from "../../utils/logger";
 
 const LEVEL_CLASS: Record<LogLevel, string> = {
   info: "text-body",

@@ -1,4 +1,4 @@
-import { DocItem } from "../types";
+import type { DocItem } from "../types";
 import { escapeHtml } from "../../utils/html";
 import version010 from "../../../docs/versions/v0.1.0.md";
 import version020 from "../../../docs/versions/v0.2.0.md";

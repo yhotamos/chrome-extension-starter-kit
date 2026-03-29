@@ -1,4 +1,4 @@
-import { ManifestMetadata } from "../types";
+import type { ManifestMetadata } from "../types";
 import { openLinkNewTab } from "../../utils/dom";
 import { escapeHtml } from "../../utils/html";
 import privacyPolicyDoc from "../../../docs/policies/privacy-policy.md";
