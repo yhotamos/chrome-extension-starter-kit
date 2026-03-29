@@ -1,6 +1,6 @@
-export type Theme = 'system' | 'light' | 'dark';
+export type Theme = "system" | "light" | "dark";
 
-export type SharePlatform = 'twitter' | 'facebook' | 'copy';
+export type SharePlatform = "twitter" | "facebook" | "copy";
 
 export interface ShareConfig {
   title: string;
@@ -14,7 +14,7 @@ export type ManifestMetadata = {
   publisher?: string;
   developer?: string;
   github_url?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export interface DocumentMetadata {
