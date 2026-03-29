@@ -26,7 +26,6 @@ export class PopupPanel {
   private clearButton: HTMLButtonElement | null;
 
   private onClearCallback: (() => void) | null = null;
-  private isInitialized: boolean = false;
 
   private startY: number = 0;
   private tmpPanelHeight: number = 0;
@@ -48,11 +47,8 @@ export class PopupPanel {
     this.clearButton = document.querySelector<HTMLButtonElement>("#clear-button");
     if (!this.checkRequiredElements()) {
       console.warn("PopupPanel: missing required DOM elements, initialization aborted.");
-      this.isInitialized = false;
       return;
     }
-
-    this.isInitialized = true;
     this.initializePanel();
     this.addEventListeners();
   }

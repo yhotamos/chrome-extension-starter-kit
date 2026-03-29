@@ -8,7 +8,7 @@ try {
   // フラッシュ防止のため先にテーマを適用
   const theme = getTheme();
   applyTheme(theme);
-} catch (e) {
+} catch (_e) {
   // ignore
 }
 

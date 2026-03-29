@@ -14,7 +14,7 @@ export type ManifestMetadata = {
   publisher?: string;
   developer?: string;
   github_url?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export interface DocumentMetadata {
