@@ -1,5 +1,5 @@
 declare module "*.md" {
-  import { DocItem } from "../popup/types";
+  import type { DocItem } from "../popup/types";
   const doc: DocItem;
   export default doc;
 }
