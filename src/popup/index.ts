@@ -1,5 +1,6 @@
 import './popup.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'bootstrap/js/dist/tab.js';
+import 'bootstrap/js/dist/collapse.js';
 import { applyTheme, getTheme } from './components/theme';
 import { PopupManager } from './manager';
 
