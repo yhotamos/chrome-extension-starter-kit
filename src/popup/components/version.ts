@@ -1,7 +1,7 @@
-import type { DocItem } from "../types";
-import { escapeHtml } from "../../utils/html";
 import version010 from "../../../docs/versions/v0.1.0.md";
 import version020 from "../../../docs/versions/v0.2.0.md";
+import { escapeHtml } from "../../utils/html";
+import type { DocItem } from "../types";
 
 const MARKDOWN_CLASS_MAP: Record<string, string> = {
   h1: "fs-6 mb-2",

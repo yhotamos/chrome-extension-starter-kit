@@ -1,7 +1,7 @@
-import type { DocItem } from "../types";
 import overviewDoc from "../../../docs/overview.md";
 import tutorialDoc from "../../../docs/tutorial.md";
 import { escapeHtml } from "../../utils/html";
+import type { DocItem } from "../types";
 
 const MARKDOWN_CLASS_MAP: Record<string, string> = {
   h1: "md-h1 fs-5",

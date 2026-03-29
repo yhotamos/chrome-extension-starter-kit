@@ -1,15 +1,22 @@
 import meta from "../../public/manifest.meta.json";
-import type { ManifestMetadata, SharePlatform, Theme } from "./types";
-import { PopupPanel } from "./components/panel";
 import { DEFAULT_SETTINGS, type Settings } from "../settings";
-import { getSettings, setSettings, isEnabled, setEnabled } from "../utils/storage";
-import { addLog, clearLogs, getLogs, LOG_STORAGE_KEY, type LogEntry, type LogLevel } from "../utils/logger";
+import {
+  addLog,
+  clearLogs,
+  getLogs,
+  LOG_STORAGE_KEY,
+  type LogEntry,
+  type LogLevel,
+} from "../utils/logger";
+import { getSettings, isEnabled, setEnabled, setSettings } from "../utils/storage";
+import { setupDocumentTab } from "./components/document";
+import { setupInfoTab } from "./components/info";
+import { setupMoreMenu } from "./components/menu";
+import { PopupPanel } from "./components/panel";
 import { initShareMenu } from "./components/share";
 import { applyTheme, setupThemeMenu } from "./components/theme";
-import { setupMoreMenu } from "./components/menu";
-import { setupInfoTab } from "./components/info";
-import { setupDocumentTab } from "./components/document";
 import { setupVersionTab } from "./components/version";
+import type { ManifestMetadata, SharePlatform, Theme } from "./types";
 
 export class PopupManager {
   private panel: PopupPanel;

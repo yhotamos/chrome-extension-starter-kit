@@ -1,7 +1,7 @@
-import type { ManifestMetadata } from "../types";
+import privacyPolicyDoc from "../../../docs/policies/privacy-policy.md";
 import { openLinkNewTab } from "../../utils/dom";
 import { escapeHtml } from "../../utils/html";
-import privacyPolicyDoc from "../../../docs/policies/privacy-policy.md";
+import type { ManifestMetadata } from "../types";
 
 const PRIVACY_CLASS_MAP: Record<string, string> = {
   h1: "fs-6 mb-2",
