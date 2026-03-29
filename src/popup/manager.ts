@@ -66,7 +66,7 @@ export class PopupManager {
   private watchStorageLogs(knownLength: number): void {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area == 'local' || changes[LOG_STORAGE_KEY]) {
-        const entries: LogEntry[] = changes[LOG_STORAGE_KEY].newValue ?? [];
+        const entries: LogEntry[] = changes[LOG_STORAGE_KEY]?.newValue || [];
         const visible = entries.filter(e => !e.hidden);
         const newEntries = visible.slice(knownLength);
         for (const entry of newEntries) {
