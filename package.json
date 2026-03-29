@@ -1,42 +1,43 @@
 {
-  "name": "chrome-extension-starter-kit",
-  "version": "0.2.2",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production webpack",
-    "build:dev": "cross-env NODE_ENV=development webpack",
-    "watch": "cross-env NODE_ENV=development webpack --watch",
-    "zip": "npm run build && npx tsx scripts/create-zip.mts",
-    "publish": "npm run build && npx tsx scripts/publish.mts"
-  },
-  "keywords": [],
-  "author": "yhotta240",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/archiver": "^7.0.0",
-    "@types/chrome": "^0.1.6",
-    "@types/marked": "^5.0.2",
-    "archiver": "^7.0.1",
-    "chrome-webstore-upload-cli": "^3.5.0",
-    "copy-webpack-plugin": "^14.0.0",
-    "cross-env": "^10.1.0",
-    "css-loader": "^7.1.4",
-    "dotenv": "^17.3.1",
-    "gray-matter": "^4.0.3",
-    "marked": "^17.0.3",
-    "raw-loader": "^4.0.2",
-    "sanitize-html": "^2.17.1",
-    "style-loader": "^4.0.0",
-    "ts-loader": "^9.5.4",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.2",
-    "webpack": "^5.101.3",
-    "webpack-cli": "^6.0.1",
-    "ws": "^8.18.3"
-  },
-  "dependencies": {
-    "bootstrap": "^5.3.8"
-  }
+	"name": "chrome-extension-starter-kit",
+	"version": "0.2.2",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "cross-env NODE_ENV=production webpack",
+		"build:dev": "cross-env NODE_ENV=development webpack",
+		"watch": "cross-env NODE_ENV=development webpack --watch",
+		"zip": "npm run build && npx tsx scripts/create-zip.mts",
+		"publish": "npm run build && npx tsx scripts/publish.mts"
+	},
+	"keywords": [],
+	"author": "yhotta240",
+	"license": "MIT",
+	"devDependencies": {
+		"@biomejs/biome": "2.4.9",
+		"@types/archiver": "^7.0.0",
+		"@types/chrome": "^0.1.6",
+		"@types/marked": "^5.0.2",
+		"archiver": "^7.0.1",
+		"chrome-webstore-upload-cli": "^3.5.0",
+		"copy-webpack-plugin": "^14.0.0",
+		"cross-env": "^10.1.0",
+		"css-loader": "^7.1.4",
+		"dotenv": "^17.3.1",
+		"gray-matter": "^4.0.3",
+		"marked": "^17.0.3",
+		"raw-loader": "^4.0.2",
+		"sanitize-html": "^2.17.1",
+		"style-loader": "^4.0.0",
+		"ts-loader": "^9.5.4",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.2",
+		"webpack": "^5.101.3",
+		"webpack-cli": "^6.0.1",
+		"ws": "^8.18.3"
+	},
+	"dependencies": {
+		"bootstrap": "^5.3.8"
+	}
 }
