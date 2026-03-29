@@ -152,20 +152,20 @@ export class PopupManager {
     // });
   }
 
-  // private async updateSettings(
-  //   patch: Partial<Settings>,
-  //   successMessage?: string,
-  //   failedMessage?: string,
-  // ): Promise<void> {
-  //   try {
-  //     this.settings = { ...this.settings, ...patch };
-  //     await setSettings(this.settings);
-  //     if (successMessage) await this.showLog(successMessage);
-  //   } catch (err) {
-  //     console.error("failed to save settings", err);
-  //     await this.showLog(failedMessage || "設定の保存に失敗しました", "error", err);
-  //   }
-  // }
+  private async updateSettings(
+    patch: Partial<Settings>,
+    successMessage?: string,
+    failedMessage?: string,
+  ): Promise<void> {
+    try {
+      this.settings = { ...this.settings, ...patch };
+      await setSettings(this.settings);
+      if (successMessage) await this.showLog(successMessage);
+    } catch (err) {
+      console.error("failed to save settings", err);
+      await this.showLog(failedMessage || "設定の保存に失敗しました", "error", err);
+    }
+  }
 
   private setupUI(): void {
     const short_name = this.manifestData.short_name || this.manifestData.name;
