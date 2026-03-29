@@ -1,12 +1,12 @@
-import { Settings, DEFAULT_SETTINGS } from '../settings';
+import { Settings, DEFAULT_SETTINGS } from "../settings";
 
 export async function getSettings(): Promise<Settings> {
-  const data = await getStorage<{ settings?: Settings }>('settings');
+  const data = await getStorage<{ settings?: Settings }>("settings");
   return data.settings ?? DEFAULT_SETTINGS;
 }
 
 export async function isEnabled(): Promise<boolean> {
-  const data = await getStorage<{ enabled?: boolean }>('enabled');
+  const data = await getStorage<{ enabled?: boolean }>("enabled");
   return data.enabled === true;
 }
 
@@ -18,7 +18,9 @@ export async function setEnabled(enabled: boolean): Promise<void> {
   await setStorage({ enabled });
 }
 
-export function getStorage<T extends Record<string, unknown>>(keys: string | string[]): Promise<Partial<T>> {
+export function getStorage<T extends Record<string, unknown>>(
+  keys: string | string[],
+): Promise<Partial<T>> {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(keys, (result) => {
       if (chrome.runtime.lastError) {
@@ -41,4 +43,3 @@ export function setStorage<T extends Record<string, unknown>>(items: T): Promise
     });
   });
 }
-

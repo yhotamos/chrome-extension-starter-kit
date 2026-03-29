@@ -1,6 +1,6 @@
-export type Theme = 'system' | 'light' | 'dark';
+export type Theme = "system" | "light" | "dark";
 
-export type SharePlatform = 'twitter' | 'facebook' | 'copy';
+export type SharePlatform = "twitter" | "facebook" | "copy";
 
 export interface ShareConfig {
   title: string;
