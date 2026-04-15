@@ -1,4 +1,4 @@
-import type { ShareConfig, SharePlatform } from "popup/types";
+import type { ShareConfig, SharePlatform } from "../types";
 
 /**
  * 各プラットフォームのシェアURLを生成

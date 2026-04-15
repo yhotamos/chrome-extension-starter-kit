@@ -1,4 +1,4 @@
-import type { Theme } from "popup/types";
+import type { Theme } from "../types";
 
 /**
  * テーマ取得
