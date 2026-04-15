@@ -153,6 +153,7 @@ export class PopupManager {
     // });
   }
 
+  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: 設定を更新する際はこの関数を呼び出してください
   private async updateSettings(
     patch: Partial<Settings>,
     successMessage?: string,
