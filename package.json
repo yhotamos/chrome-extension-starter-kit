@@ -1,12 +1,12 @@
 {
 	"name": "chrome-extension-starter-kit",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-    "check": "biome check src",
-    "check:fix": "biome check --write --unsafe src",
-    "typecheck": "tsc --noEmit",
+		"check": "biome check src",
+		"check:fix": "biome check --write --unsafe src",
+		"typecheck": "tsc --noEmit",
 		"build": "npm run check && npm run typecheck && cross-env NODE_ENV=production webpack",
 		"build:dev": "cross-env NODE_ENV=development webpack",
 		"watch": "cross-env NODE_ENV=development webpack --watch",
