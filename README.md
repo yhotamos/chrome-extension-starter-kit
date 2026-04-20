@@ -176,18 +176,18 @@ lang: ja
 
 ### 公開スクリプト
 
-公開に関する npm スクリプトは以下の2つです．
+公開に関連する npm スクリプトは以下の通りです．
 
-- `npm run zip`
-  - `scripts/zip.mts` を実行して `dist/` を ZIP 化します．
+- `npm run pack`
+  - `dist/` ディレクトリの内容を ZIP 圧縮して `releases/` に出力します．
   - 出力先：`releases/<package-name>-<version>.zip`
 
-- `npm run publish`
-  - `scripts/publish.mts` を実行して，ZIP を Chrome Web Store にアップロードして公開します．
+- `npm run release`
+  - `releases/` ディレクトリの最新の ZIP を Chrome Web Store にアップロードして公開します．
   - `.env` に必要な環境変数が設定されている必要があります（後述）．
-  - `EXTENSION_ID` が必要なため，初回は `npm run zip` で作成した ZIP を手動で Chrome Web Store にアップロードし，`EXTENSION_ID` を取得してください．取得後は，2回目以降 `npm run publish` で公開できます．
+  - `EXTENSION_ID` が必要なため，初回は `npm run pack` で作成した ZIP を手動で Chrome Web Store にアップロードし，`EXTENSION_ID` を取得してください．取得後は，2回目以降 `npm run release` で公開できます．
 
-`npm run publish` を使用するには，`.env` に次の環境変数を設定する必要があります．
+`npm run release` を使用するには，`.env` に次の環境変数を設定する必要があります．
 `.env.example` を参考にして `.env` ファイルを作成してください．
 
 ```env
@@ -195,9 +195,10 @@ EXTENSION_ID=...
 CLIENT_ID=...
 CLIENT_SECRET=...
 REFRESH_TOKEN=...
+PUBLISHER_ID=...
 ```
 
-これらが不足している場合，スクリプトはエラーで停止します．
+これらが不足している場合，スクリプトはエラーで停止します．詳しくは [github.com/yhotamos/extension-release-cli](https://github.com/yhotamos/extension-release-cli) のドキュメントを参照してください．
 
 ## 開発ワークフロー
 
