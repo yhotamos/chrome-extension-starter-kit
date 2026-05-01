@@ -85,7 +85,6 @@ module.exports = function (source) {
         content: sanitized,
       };
     });
-    console.log('versions:', result);
 
     const code = `export default ${JSON.stringify(result, null, 2)};`;
 
