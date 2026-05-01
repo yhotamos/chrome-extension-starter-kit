@@ -18,7 +18,7 @@ const MARKDOWN_CLASS_MAP: Record<string, string> = {
 /**
  * バージョンタブをセットアップする
  */
-export function setupVersionTab(currentVersion: string): void {
+export function setupVersionTab(_currentVersion: string): void {
   const versionTab = document.getElementById("version");
   if (!versionTab) return;
 
@@ -29,15 +29,15 @@ export function setupVersionTab(currentVersion: string): void {
     return;
   }
 
-  versionTab.innerHTML = createVersionListHTML(allVersions, currentVersion);
+  versionTab.innerHTML = createVersionListHTML(allVersions);
 }
 
-function createVersionListHTML(items: VersionItem[], currentVersion: string): string {
+function createVersionListHTML(items: VersionItem[]): string {
   const entries = items
     .map((item, index) => {
       const version = String(item.metadata.id || item.metadata.version || "");
       const displayDate = formatReleaseDate(item.metadata.date);
-      const badge = createBadgeHTML(version, currentVersion, index === 0);
+      const badge = createBadgeHTML(index === 0);
       const content = applyMarkdownClassMap(item.content);
 
       return `
@@ -75,16 +75,8 @@ function formatReleaseDate(dateValue?: string): string {
   return Number.isNaN(parsed.getTime()) ? raw : parsed.toISOString().slice(0, 10);
 }
 
-function createBadgeHTML(version: string, currentVersion: string, isFirst: boolean): string {
-  if (version === currentVersion) {
-    return '<span class="badge bg-success">現在使用中</span>';
-  }
-
-  if (isFirst) {
-    return '<span class="badge bg-primary">最新</span>';
-  }
-
-  return "";
+function createBadgeHTML(isFirst: boolean): string {
+  return isFirst ? '<span class="badge bg-primary">最新</span>' : "";
 }
 
 function applyMarkdownClassMap(html: string): string {
