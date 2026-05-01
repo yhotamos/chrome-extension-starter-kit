@@ -1,7 +1,6 @@
-import version010 from "../../../docs/versions/v0.1.0.md";
-import version020 from "../../../docs/versions/v0.2.0.md";
+import changeLog from "../../../CHANGELOG.md";
 import { escapeHtml } from "../../utils/html";
-import type { DocItem } from "../types";
+import type { VersionItem } from "../types";
 
 const MARKDOWN_CLASS_MAP: Record<string, string> = {
   h1: "fs-6 mb-2",
@@ -23,24 +22,20 @@ export function setupVersionTab(currentVersion: string): void {
   const versionTab = document.getElementById("version");
   if (!versionTab) return;
 
-  const allVersions: DocItem[] = [version020, version010].sort(
-    (a, b) => b.metadata.order - a.metadata.order,
-  );
-  const visibleVersions = allVersions.filter((item) => item.metadata.visible !== false);
+  const allVersions: VersionItem[] = changeLog.sort((a, b) => b.metadata.order - a.metadata.order);
 
-  if (visibleVersions.length === 0) {
+  if (allVersions.length === 0) {
     versionTab.innerHTML = '<p class="text-center text-muted mt-5">更新履歴がありません</p>';
     return;
   }
 
-  versionTab.innerHTML = createVersionListHTML(visibleVersions, currentVersion);
+  versionTab.innerHTML = createVersionListHTML(allVersions, currentVersion);
 }
 
-function createVersionListHTML(items: DocItem[], currentVersion: string): string {
+function createVersionListHTML(items: VersionItem[], currentVersion: string): string {
   const entries = items
     .map((item, index) => {
-      const version = String(item.metadata.id || item.metadata.title || "");
-      const title = escapeHtml(item.metadata.title || version || "Version");
+      const version = String(item.metadata.id || item.metadata.version || "");
       const displayDate = formatReleaseDate(item.metadata.date);
       const badge = createBadgeHTML(version, currentVersion, index === 0);
       const content = applyMarkdownClassMap(item.content);
@@ -48,7 +43,7 @@ function createVersionListHTML(items: DocItem[], currentVersion: string): string
       return `
       <li class="list-group-item">
         <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-          <strong>${title}</strong>
+          <strong>${version}</strong>
           ${badge}
         </div>
         ${displayDate ? `<p class="small text-muted mb-2">${escapeHtml(displayDate)}</p>` : ""}

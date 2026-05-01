@@ -31,3 +31,16 @@ export interface DocItem {
   metadata: DocumentMetadata;
   content: string; // HTML
 }
+
+export interface VersionMetadata {
+  id: string;
+  title: string;
+  version: string;
+  date?: string;
+  order: number;
+}
+
+export interface VersionItem {
+  metadata: VersionMetadata;
+  content: string; // HTML
+}

@@ -48,7 +48,17 @@ module.exports = {
         }
       },
       {
+        test: /CHANGELOG\.md$/,
+        type: 'javascript/auto',
+        use: [
+          {
+            loader: path.join(ROOT, "scripts", "changelog-loader.js")
+          }
+        ]
+      },
+      {
         test: /\.md$/,
+        exclude: /CHANGELOG\.md$/,
         type: 'javascript/auto',
         use: [
           {
