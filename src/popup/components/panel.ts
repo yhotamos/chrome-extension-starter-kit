@@ -113,6 +113,15 @@ export class PopupPanel {
     this.panelButton?.addEventListener("click", () => {
       this.togglePanel(true);
       this.switchMinMaxButtons();
+      this.panel?.addEventListener(
+        "transitionend",
+        () => {
+          if (this.messageScrollDiv) {
+            this.messageScrollDiv.scrollTop = this.messageScrollDiv.scrollHeight;
+          }
+        },
+        { once: true },
+      );
     });
 
     this.closeButton?.addEventListener("click", () => {
