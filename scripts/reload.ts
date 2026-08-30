@@ -1,4 +1,4 @@
-const DEV_SERVER_PORT = process.env.VITE_RELOADER_PORT || "6571";
+const DEV_SERVER_PORT = 6571;
 const DEV_SERVER_URL = `ws://localhost:${DEV_SERVER_PORT}`;
 
 /**

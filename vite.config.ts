@@ -9,7 +9,7 @@ const r = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === "development";
-  const reloaderPort = Number(process.env.VITE_RELOADER_PORT || 6571);
+  const reloaderPort = 6571;
   const bgEntry = isDev
     ? r("./src/background/dev.ts")
     : r("./src/background/index.ts");
@@ -21,7 +21,6 @@ export default defineConfig(({ mode }) => {
       "process.env.NODE_ENV": JSON.stringify(
         isDev ? "development" : "production"
       ),
-      "process.env.VITE_RELOADER_PORT": JSON.stringify(String(reloaderPort)),
     },
 
     build: {
