@@ -12,7 +12,7 @@ TypeScript と Vite を使用して Chrome 拡張機能を開発するための�
 
 ## 必要条件
 
-- [Node.js](https://nodejs.org/) (v22.x 以上を推奨)
+- [Node.js](https://nodejs.org/) (v22.12.0 以上、またはv24.x以上を推奨)
 - [npm](https://www.npmjs.com/) または [yarn](https://yarnpkg.com/)
 
 ## クイックスタート

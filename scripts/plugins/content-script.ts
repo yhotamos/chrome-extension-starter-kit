@@ -34,6 +34,9 @@ export function contentScriptPlugin(isDev: boolean, root: string): Plugin {
             define: {
               "process.env.NODE_ENV": JSON.stringify(isDev ? "development" : "production"),
             },
+            resolve: {
+              alias: { src: resolve(root, "src") },
+            },
             build: {
               outDir: resolve(root, "dist"),
               emptyOutDir: false,
