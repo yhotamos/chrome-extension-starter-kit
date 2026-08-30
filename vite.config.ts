@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { markdownPlugin } from "./scripts/vite-plugin-markdown";
 import { extensionReloaderPlugin } from "./scripts/vite-plugin-extension-reloader";
+import { contentScriptPlugin } from "./scripts/vite-plugin-content-script";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -25,17 +26,15 @@ export default defineConfig(({ mode }) => {
       minify: isDev ? false : "esbuild",
       rollupOptions: {
         input: {
-          // 開発時は dev.ts（オートリロード込み），本番は index.ts
           background: isDev ? resolve(__dirname, "src/background/dev.ts") : resolve(__dirname, "src/background/index.ts"),
-          content: resolve(__dirname, "src/content/index.ts"),
           popup: resolve(__dirname, "src/popup/index.ts"),
+          // content は content スクリプト用プラグインが IIFE として別途ビルド
         },
         output: {
           entryFileNames: "[name].js",
           chunkFileNames: "[name].js",
-          // CSS や画像のアセット名をフラットに出力（例: popup.css, assets/icon.png）
           assetFileNames: (assetInfo) => {
-            const name = assetInfo.names?.[0] ?? assetInfo.name ?? "asset";
+            const name = assetInfo.names?.[0] ?? assetInfo.name ?? "unknown";
             const ext = name.split(".").pop() ?? "";
             if (/png|jpe?g|gif|svg|webp/i.test(ext)) {
               return "assets/[name][extname]";
@@ -48,21 +47,17 @@ export default defineConfig(({ mode }) => {
 
     resolve: {
       alias: {
-        // tsconfig の baseUrl: "src" に対応するエイリアス
         src: resolve(__dirname, "src"),
       },
     },
 
     plugins: [
       markdownPlugin(),
-
-      // 静的ファイルのコピー（CopyWebpackPlugin の代替）
       viteStaticCopy({
         targets: [
           { src: "public/popup.html", dest: "." },
           { src: "public/manifest.meta.json", dest: "." },
           { src: "public/icons", dest: "." },
-          // 環境に応じた manifest を manifest.json としてコピー
           {
             src: `public/manifest.${isDev ? "dev" : "prod"}.json`,
             dest: ".",
@@ -71,8 +66,10 @@ export default defineConfig(({ mode }) => {
         ],
       }),
 
-      // 開発時のみ拡張機能オートリロードを有効化
       ...(isDev ? [extensionReloaderPlugin()] : []),
+
+      // content script を自己完結 IIFE としてビルド（logger.js 等の外部 import を排除）
+      contentScriptPlugin(isDev),
     ],
   };
 });
