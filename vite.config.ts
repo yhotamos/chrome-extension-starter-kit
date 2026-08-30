@@ -35,7 +35,8 @@ export default defineConfig(({ mode }) => {
         output: {
           entryFileNames: "[name].js",
           chunkFileNames: "[name].js",
-          assetFileNames: ({ name }) => {
+          assetFileNames: ({ names }) => {
+            const name = names.length > 0 ? names[0] : "asset";
             if (!name) return "[name][extname]";
             if (/\.(png|jpe?g|gif|svg|webp)$/i.test(name)) {
               return "assets/[name][extname]";
