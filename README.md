@@ -1,18 +1,18 @@
 # Chrome Extension Starter Kit
 
-TypeScript と webpack を使用して Chrome 拡張機能を開発するためのスターターキット
+TypeScript と Vite を使用して Chrome 拡張機能を開発するためのスターターキット
 
 ## 特徴
 
 - TypeScript 対応: 静的型付けによる開発効率とコードの品質向上
-- webpack 導入済み: TypeScript ファイルを JavaScript にコンパイルしファイルをバンドル
+- Vite 導入済み: TypeScript ファイルを高速にバンドル
 - オートリロード機能: 開発モードでのファイル変更時に自動的に拡張機能をリロード（WebSocket 使用）
 - Bootstrap UI: モダンで使いやすいポップアップ UI
 - 基本的なファイル構成: 開発をすぐに開始できるよう必要なファイルが揃った状態
 
 ## 必要条件
 
-- [Node.js](https://nodejs.org/) (v18.x 以上を推奨)
+- [Node.js](https://nodejs.org/) (v22.x 以上を推奨)
 - [npm](https://www.npmjs.com/) または [yarn](https://yarnpkg.com/)
 
 ## クイックスタート
@@ -102,7 +102,7 @@ npm run build
 - `public/manifest.prod.json`: 本番用マニフェスト（公開時に使用）
 - `public/manifest.meta.json`: メタ情報用マニフェスト
 
-ビルドプロセスに応じて，webpack が自動的に適切なマニフェストを `dist/` にコピーします．
+ビルドプロセスに応じて，Vite が自動的に適切なマニフェストを `dist/` にコピーします．
 
 ### コアスクリプト
 
@@ -152,7 +152,7 @@ npm run build
 
 - 読み込み元: `docs/overview.md`, `docs/tutorial.md`
 - 表示処理: `src/popup/components/document.ts`
-- Markdown変換: `scripts/md-loader.js`（Front Matter を解析し，本文を HTML 化）
+- Markdown変換: `scripts/plugins/markdown.ts`（Front Matter と CHANGELOG を解析し，本文を HTML 化）
 
 各 `.md` は先頭に Front Matter を持てます（例）:
 
@@ -296,7 +296,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 ### 仕組み
 
-- webpack が watch モードで起動し，ファイル変更を監視
+- Vite が watch モードで起動し，ファイル変更を監視
 - ビルド完了後，WebSocket サーバー（ポート 6571）にリロード信号を送信
 - 拡張機能の background スクリプトが信号を受け取り，`chrome.runtime.reload()` を実行
 

@@ -1,14 +1,15 @@
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import { markdownPlugin } from "./scripts/plugins/markdown";
-import { extensionReloaderPlugin } from "./scripts/plugins/extension-reloader";
-import { contentScriptPlugin } from "./scripts/plugins/content-script";
+import { markdownPlugin } from "./scripts/plugins/markdown.ts";
+import { extensionReloaderPlugin } from "./scripts/plugins/extension-reloader.ts";
+import { contentScriptPlugin } from "./scripts/plugins/content-script.ts";
 
 const r = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === "development";
+  const reloaderPort = Number(process.env.VITE_RELOADER_PORT || 6571);
   const bgEntry = isDev
     ? r("./src/background/dev.ts")
     : r("./src/background/index.ts");
@@ -20,13 +21,15 @@ export default defineConfig(({ mode }) => {
       "process.env.NODE_ENV": JSON.stringify(
         isDev ? "development" : "production"
       ),
+      "process.env.VITE_RELOADER_PORT": JSON.stringify(String(reloaderPort)),
     },
 
     build: {
       outDir: "dist",
       emptyOutDir: true,
       sourcemap: isDev,
-      minify: isDev ? false : "esbuild",
+      // Vite 8 のデフォルト（Oxc）を使う。esbuild minifier は Vite 8 で非推奨。
+      minify: isDev ? false : undefined,
       rollupOptions: {
         input: {
           background: bgEntry,
@@ -58,20 +61,20 @@ export default defineConfig(({ mode }) => {
 
       viteStaticCopy({
         targets: [
-          { src: "public/popup.html", dest: "." },
-          { src: "public/manifest.meta.json", dest: "." },
-          { src: "public/icons", dest: "." },
+          { src: "public/popup.html", dest: ".", rename: { stripBase: 1 } },
+          { src: "public/manifest.meta.json", dest: ".", rename: { stripBase: 1 } },
+          { src: "public/icons", dest: ".", rename: { stripBase: 1 } },
           {
             src: `public/manifest.${isDev ? "dev" : "prod"}.json`,
             dest: ".",
-            rename: "manifest.json",
+            rename: { stripBase: 1, name: "manifest.json" },
           },
         ],
       }),
 
-      ...(isDev ? [extensionReloaderPlugin()] : []),
-
       contentScriptPlugin(isDev, fileURLToPath(new URL(".", import.meta.url))),
+
+      ...(isDev ? [extensionReloaderPlugin(reloaderPort)] : []),
     ],
   };
 });
