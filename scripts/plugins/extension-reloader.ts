@@ -19,43 +19,68 @@ export function extensionReloaderPlugin(port = 6571): Plugin {
   const cleanup = () => {
     const server = wss;
     wss = null;
-    server?.close();
+    if (!server) return;
+
+    for (const client of server.clients) {
+      client.terminate();
+    }
+    server.close();
   };
 
   return {
     name: "extension-reloader",
     apply: "build",
 
-    buildStart() {
+    async buildStart() {
       watchMode = this.meta.watchMode;
       if (wss) return;
 
-      try {
-        wss = new WebSocketServer({ port });
-        wss.on("listening", () => {
-          console.log(`[extension-reloader] WebSocket server listening on port ${port}`);
-        });
-        wss.on("error", (err: NodeJS.ErrnoException) => {
-          console.warn("[extension-reloader] error:", err.code ?? err);
-          if (err.code === "EADDRINUSE") cleanup();
-        });
+      const server = new WebSocketServer({ port });
+      const onListening = () => {
+        console.log(`[extension-reloader] WebSocket server listening on port ${port}`);
+      };
+      let handleListening: (() => void) | undefined;
+      let handleError: ((err: NodeJS.ErrnoException) => void) | undefined;
 
-        process.once("exit", cleanup);
-        process.once("SIGINT", () => {
-          cleanup();
-          process.exit();
-        });
-        process.once("SIGTERM", () => {
-          cleanup();
-          process.exit();
+      try {
+        await new Promise<void>((resolve, reject) => {
+          handleListening = () => {
+            onListening();
+            resolve();
+          };
+          handleError = (err: NodeJS.ErrnoException) => reject(err);
+
+          server.once("listening", handleListening);
+          server.once("error", handleError);
         });
       } catch (err: unknown) {
-        console.warn(
-          "[extension-reloader] WebSocket サーバの作成に失敗しました:",
-          (err as NodeJS.ErrnoException)?.code ?? err,
-        );
-        cleanup();
+        const code = (err as NodeJS.ErrnoException)?.code;
+        if (code === "EADDRINUSE") {
+          throw new Error(
+            `[extension-reloader] port ${port} is already in use. Stop the existing watch process before starting another.`,
+          );
+        }
+        throw err;
+      } finally {
+        if (handleListening) server.off("listening", handleListening);
+        if (handleError) server.off("error", handleError);
       }
+
+      wss = server;
+      server.on("error", (err: NodeJS.ErrnoException) => {
+        console.warn("[extension-reloader] error:", err.code ?? err);
+        cleanup();
+      });
+
+      process.once("exit", cleanup);
+      process.once("SIGINT", () => {
+        cleanup();
+        process.exit();
+      });
+      process.once("SIGTERM", () => {
+        cleanup();
+        process.exit();
+      });
     },
 
     writeBundle: {
