@@ -3,9 +3,8 @@ import { build } from "vite";
 import { resolve } from "node:path";
 
 /**
- * content script を依存すべてインライン済みの IIFE としてビルドする Vite プラグイン。
- * Chrome の content scripts は ES module の import が使えないため、
- * メインビルドのチャンク分割（logger.js 等）とは分離して単独バンドルにする。
+ * Content script を IIFE 形式で単独バンドルするプラグイン．
+ * Chrome の content scripts は ES module が使えないため，すべての依存を内包する必要がある．
  */
 export function contentScriptPlugin(isDev: boolean, root: string): Plugin {
   let building = false;
