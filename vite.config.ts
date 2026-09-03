@@ -4,6 +4,7 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import { markdownPlugin } from "./scripts/plugins/markdown.ts";
 import { extensionReloaderPlugin } from "./scripts/plugins/extension-reloader.ts";
 import { contentScriptPlugin } from "./scripts/plugins/content-script.ts";
+import { popupScriptPlugin } from "./scripts/plugins/popup-script.ts";
 
 const r = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
@@ -32,7 +33,6 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           background: bgEntry,
-          popup: r("./src/popup/index.ts"),
         },
         output: {
           entryFileNames: "[name].js",
@@ -72,6 +72,7 @@ export default defineConfig(({ mode }) => {
       }),
 
       contentScriptPlugin(isDev, fileURLToPath(new URL(".", import.meta.url))),
+      popupScriptPlugin(isDev, fileURLToPath(new URL(".", import.meta.url))),
 
       ...(isDev ? [extensionReloaderPlugin(reloaderPort)] : []),
     ],

@@ -29,7 +29,7 @@ export function contentScriptPlugin(isDev: boolean, root: string): Plugin {
         try {
           await build({
             configFile: false,
-            logLevel: "warn",
+            logLevel: "info",
             publicDir: false,
             define: {
               "process.env.NODE_ENV": JSON.stringify(isDev ? "development" : "production"),
