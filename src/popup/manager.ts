@@ -43,6 +43,9 @@ export class PopupManager {
     this.panel.setClearCallback(async () => {
       await clearLogs();
     });
+    // storageの読み込みを待たずに、基本UIと操作を先に初期化する。
+    this.setupUI();
+    this.addEventListeners();
 
     try {
       const logs = await getLogs();
@@ -67,9 +70,6 @@ export class PopupManager {
       console.error("error", err);
       await this.showLog("設定の読み込みに失敗しました", "error", err);
     }
-
-    this.addEventListeners();
-    this.setupUI();
   }
 
   private watchStorageLogs(knownLength: number): void {
