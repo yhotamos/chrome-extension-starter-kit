@@ -3,6 +3,7 @@ import { build } from "vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import { resolve } from "node:path";
 import { markdownPlugin } from "./markdown.ts";
+import { addProjectWatchFiles } from "../watch-files.ts";
 
 /** Popupを単独entryとしてビルドし，依存関係をpopup.jsへ内包するプラグイン */
 export function popupScriptPlugin(isDev: boolean, root: string): Plugin {
@@ -14,11 +15,8 @@ export function popupScriptPlugin(isDev: boolean, root: string): Plugin {
     apply: "build",
 
     buildStart() {
-      // nested buildは親のwatch graphに入らないため，popup の依存があるディレクトリを監視する
-      this.addWatchFile(resolve(root, "src"));
-      this.addWatchFile(resolve(root, "docs"));
-      this.addWatchFile(resolve(root, "CHANGELOG.md"));
-      this.addWatchFile(resolve(root, "public/manifest.meta.json"));
+      // nested buildは親のwatch graphに入らないため，依存ファイルを親のwatch graphへ追加する．
+      addProjectWatchFiles(this, root);
     },
 
     writeBundle: {

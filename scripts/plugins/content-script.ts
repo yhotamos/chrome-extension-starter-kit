@@ -1,6 +1,7 @@
 import type { Plugin } from "vite";
 import { build } from "vite";
 import { resolve } from "node:path";
+import { addProjectWatchFiles } from "../watch-files.ts";
 
 /**
  * Content script を IIFE 形式で単独バンドルするプラグイン．
@@ -8,7 +9,6 @@ import { resolve } from "node:path";
  */
 export function contentScriptPlugin(isDev: boolean, root: string): Plugin {
   const contentEntry = resolve(root, "src/content/index.ts");
-  const contentLogger = resolve(root, "src/utils/logger.ts");
   let building = false;
 
   return {
@@ -16,9 +16,8 @@ export function contentScriptPlugin(isDev: boolean, root: string): Plugin {
     apply: "build",
 
     buildStart() {
-      // Content script は別の Vite build で生成するため、親の watch graph に明示的に追加する。
-      this.addWatchFile(contentEntry);
-      this.addWatchFile(contentLogger);
+      // Content scriptは別のVite buildで生成するため，依存ファイルを親のwatch graphへ追加する．
+      addProjectWatchFiles(this, root);
     },
 
     writeBundle: {
