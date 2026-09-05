@@ -5,6 +5,7 @@
     "types": ["chrome", "node"],
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "noEmit": true,
     "allowImportingTsExtensions": true,
     "strict": true,
     "outDir": "dist",
