@@ -50,7 +50,7 @@ function createAccordionHTML(docs: DocItem[]): string {
       const collapseClass = expanded ? "show" : "";
       const buttonClass = expanded ? "" : "collapsed";
       const ariaExpanded = expanded ? "true" : "false";
-      const styledContent = applyMarkdownClassMap(doc.content);
+      const styledContent = renderDocumentContent(doc.content);
 
       return `
       <div class="accordion-item">
@@ -74,7 +74,19 @@ function createAccordionHTML(docs: DocItem[]): string {
 }
 
 /**
- * Markdown のタグにクラスを付与する
+ * MarkdownのHTMLをポップアップ用のDOMへ整形する
+ */
+function renderDocumentContent(html: string): string {
+  const contentWithTips = html.replace(
+    /<blockquote>\s*<p>\[!TIP\]\s*([\s\S]*?)<\/p>\s*<\/blockquote>/g,
+    '<aside class="md-tip"><strong><i class="bi bi-lightbulb" aria-hidden="true"></i>Tip</strong><p>$1</p></aside>',
+  );
+
+  return applyMarkdownClassMap(contentWithTips);
+}
+
+/**
+ * Markdownのタグにポップアップ用クラスを付与する
  */
 function applyMarkdownClassMap(html: string): string {
   return Object.entries(MARKDOWN_CLASS_MAP).reduce((result, [tag, className]) => {
