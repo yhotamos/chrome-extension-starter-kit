@@ -78,8 +78,9 @@ function createAccordionHTML(docs: DocItem[]): string {
  */
 function renderDocumentContent(html: string): string {
   const contentWithTips = html.replace(
-    /<blockquote>\s*<p>\[!TIP\]\s*([\s\S]*?)<\/p>\s*<\/blockquote>/g,
-    '<aside class="md-tip"><strong><i class="bi bi-lightbulb" aria-hidden="true"></i>Tip</strong><p>$1</p></aside>',
+    /<blockquote>\s*<p>\[!TIP\]\s*([\s\S]*?)<\/p>([\s\S]*?)<\/blockquote>/g,
+    (_match, firstParagraph: string, remainingContent: string) =>
+      `<aside class="md-tip"><strong><i class="bi bi-lightbulb" aria-hidden="true"></i>Tip</strong>${firstParagraph ? `<p>${firstParagraph}</p>` : ""}${remainingContent}</aside>`,
   );
 
   return applyMarkdownClassMap(contentWithTips);
