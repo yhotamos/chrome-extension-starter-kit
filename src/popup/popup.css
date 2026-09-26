@@ -40,13 +40,18 @@ html {
 #panel.no-transition {
   transition: none !important;
 }
-#document .md-tip {
-  border-inline-start: 0.25rem solid var(--bs-success, #198754);
+
+#document blockquote {
+  border-inline-start: 0.25rem solid var(--bs-secondary, #6c757d);
   padding: 0.5rem 1rem;
   margin-block: 1rem;
 }
 
-#document .md-tip > strong {
+#document blockquote.md-tip {
+  border-inline-start-color: var(--bs-success, #198754);
+}
+
+#document blockquote.md-tip > strong {
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -54,7 +59,7 @@ html {
   margin-bottom: 0.25rem;
 }
 
-#document .md-tip p:last-child {
+#document blockquote p:last-child {
   margin-bottom: 0;
 }
 

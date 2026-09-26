@@ -16,6 +16,9 @@ const MARKDOWN_CLASS_MAP: Record<string, string> = {
   li: "md-li",
 };
 
+const TIP_BLOCKQUOTE_PATTERN =
+  /<blockquote>\s*<p>\[!TIP\]\s*([\s\S]*?)<\/p>([\s\S]*?)<\/blockquote>/g;
+
 /**
  * ドキュメントタブをセットアップする
  */
@@ -77,13 +80,22 @@ function createAccordionHTML(docs: DocItem[]): string {
  * MarkdownのHTMLをポップアップ用のDOMへ整形する
  */
 function renderDocumentContent(html: string): string {
-  const contentWithTips = html.replace(
-    /<blockquote>\s*<p>\[!TIP\]\s*([\s\S]*?)<\/p>([\s\S]*?)<\/blockquote>/g,
-    (_match, firstParagraph: string, remainingContent: string) =>
-      `<aside class="md-tip"><strong><i class="bi bi-lightbulb" aria-hidden="true"></i>Tip</strong>${firstParagraph ? `<p>${firstParagraph}</p>` : ""}${remainingContent}</aside>`,
-  );
+  return applyMarkdownClassMap(replaceTipBlockquotes(html));
+}
 
-  return applyMarkdownClassMap(contentWithTips);
+/**
+ * TIPマーカー付きの引用をTIP用のblockquoteへ変換する
+ */
+function replaceTipBlockquotes(html: string): string {
+  return html.replace(
+    TIP_BLOCKQUOTE_PATTERN,
+    (_match, firstParagraph: string, remainingContent: string) => {
+      const firstParagraphHtml = firstParagraph ? `<p>${firstParagraph}</p>` : "";
+      const tipLabelHtml = '<strong><i class="bi bi-lightbulb" aria-hidden="true"></i>Tip</strong>';
+
+      return `<blockquote class="md-tip">${tipLabelHtml}${firstParagraphHtml}${remainingContent}</blockquote>`;
+    },
+  );
 }
 
 /**
