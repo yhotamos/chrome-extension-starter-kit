@@ -49,14 +49,13 @@ export class PopupManager {
 
     try {
       const logs = await getLogs();
-      const visibleCount = logs.filter((e) => !e.hidden).length;
       if (logs.length > 0) {
         this.panel.loadLogs(logs, this.manifestMetadata.issues_url);
       }
-      this.watchStorageLogs(visibleCount);
+      this.watchStorageLogs();
     } catch (err) {
       console.error("ログ読み込みエラー", err);
-      this.watchStorageLogs(0);
+      this.watchStorageLogs();
     }
 
     try {
@@ -72,24 +71,12 @@ export class PopupManager {
     }
   }
 
-  private watchStorageLogs(knownLength: number): void {
-    let currentLength = knownLength;
+  private watchStorageLogs(): void {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === "local" && changes[LOG_STORAGE_KEY]) {
         const rawEntries = changes[LOG_STORAGE_KEY]?.newValue;
         const entries: LogEntry[] = Array.isArray(rawEntries) ? rawEntries : [];
-        const visible = entries.filter((e) => !e.hidden);
-        const newEntries = visible.slice(currentLength);
-        for (const entry of newEntries) {
-          this.panel.messageOutput(
-            entry.message,
-            entry.timestamp,
-            entry.level,
-            entry.source,
-            this.manifestMetadata.issues_url,
-          );
-        }
-        currentLength = visible.length;
+        this.panel.loadLogs(entries, this.manifestMetadata.issues_url);
       }
     });
   }
